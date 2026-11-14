@@ -180,7 +180,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 // terminal
 const cmds = {
-  neofetch: ['neofetch', 'asifur@macbook\nname     Asifur (Asif) Rahman\nrole     software engineer, prev @ BMO Capital Markets\nos       macOS\nlangs    Java, Python, C++\nschool   final year, CS @ Concordia'],
+  neofetch: ['whoami', 'name     Asifur (Asif) Rahman\nrole     software engineer, prev @ BMO Capital Markets\nos       macOS\nlangs    Java, Python, C++\nschool   final year, CS @ Concordia'],
   status: ['echo "open to work"', 'open to work'],
   gitlog: ['git log -1 --oneline', 'd06f076 Update README.md'],
   ls: ['ls ~/projects', 'hammerfall-grove/  service-booking-platform/  bixi-demand-forecaster/  cell-coverage-analyzer/']
@@ -191,7 +191,7 @@ function drawTerm() {
     `<div><div><span style="color:var(--accent)">$</span> <span style="color:var(--ink)">${esc(cmds[k][0])}</span></div><div class="out">${esc(cmds[k][1])}</div></div>`
   ).join('') + '<div style="display:flex;gap:8px;align-items:center"><span style="color:var(--accent)">$</span><span class="cursor" style="width:8px;height:17px;background:#D5DBE3"></span></div>';
 }
-[['neofetch', 'neofetch'], ['status', 'echo "open to work"'], ['gitlog', 'git log -1'], ['ls', 'ls ~/projects']].forEach(([k, label]) => {
+[['neofetch', 'whoami'], ['status', 'echo "open to work"'], ['gitlog', 'git log -1'], ['ls', 'ls ~/projects']].forEach(([k, label]) => {
   const b = document.createElement('button');
   b.type = 'button'; b.className = 'chip'; b.textContent = label;
   b.onclick = () => { hist = hist.concat([k]).slice(-4); drawTerm(); };
