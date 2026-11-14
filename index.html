@@ -10,19 +10,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
 <style>
-:root{--accent:#F5B544;--bg:#0B0F14;--panel:#11161D;--panel2:#0E131A;--line:#1F2733;--line2:#253041;--ink:#F2F4F7;--text:#D5DBE3;--muted:#93A0B0;--soft:#B4BCC8;--mono:'JetBrains Mono',monospace;--head:'Space Grotesk',sans-serif}
+:root{--accent:#7AA2F7;--bg:#0B0F14;--panel:#11161D;--panel2:#0E131A;--line:#1F2733;--line2:#253041;--ink:#F2F4F7;--text:#D5DBE3;--muted:#93A0B0;--soft:#B4BCC8;--mono:'JetBrains Mono',monospace;--head:'Space Grotesk',sans-serif}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:16px;line-height:1.6}
 a{color:var(--accent)}
 button{font:inherit;cursor:pointer}
 :focus-visible{outline:2px solid #fff;outline-offset:3px}
-.wrap{max-width:1160px;margin:0 auto;padding:0 32px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:clamp(20px,5vw,64px);padding-right:clamp(20px,5vw,64px)}
 .mono{font-family:var(--mono)}
 .label{font-family:var(--mono);font-size:13px;color:var(--accent)}
 h2{margin:0;font-family:var(--head);font-size:40px;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
 .sub{margin:0;color:var(--muted)}
 section{border-bottom:1px solid var(--line)}
-.sec{padding:96px 0;display:flex;flex-direction:column;gap:36px}
+.sec{padding-top:96px;padding-bottom:96px;display:flex;flex-direction:column;gap:36px}
 .btn{display:inline-block;padding:9px 16px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;border:1px solid #3A4555;color:var(--ink)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#0B0F14}
 .chip{min-height:36px;padding:0 12px;background:var(--panel);border:1px solid var(--line2);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px}
@@ -33,7 +33,7 @@ header .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:spac
 nav{display:flex;flex-wrap:wrap;align-items:center;gap:2px}
 nav a{padding:12px;color:var(--soft);text-decoration:none;font-size:15px;font-weight:500}
 #about{position:relative;overflow:hidden;background-image:radial-gradient(#1C2430 1px,transparent 1px);background-size:24px 24px}
-.hero{padding:104px 0 140px;display:flex;flex-wrap:wrap;gap:56px;align-items:center}
+.hero{padding-top:104px;padding-bottom:140px;display:flex;flex-wrap:wrap;gap:56px;align-items:center}
 .hero h1{margin:0;font-family:var(--head);font-weight:600;font-size:clamp(40px,5vw,64px);line-height:1.06;letter-spacing:-.025em;color:var(--ink)}
 .term{background:var(--panel2);border:1px solid var(--line2);border-radius:14px;overflow:hidden}
 .term-top{display:flex;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted)}
@@ -119,7 +119,7 @@ nav a{padding:12px;color:var(--soft);text-decoration:none;font-size:15px;font-we
 <g class="legB" style="opacity:0"><rect x="2" y="9" width="1" height="3" fill="#B07A45"/><rect x="4" y="9" width="1" height="2" fill="#B07A45"/><rect x="9" y="9" width="1" height="2" fill="#B07A45"/><rect x="11" y="9" width="1" height="3" fill="#B07A45"/></g>
 <rect x="9" y="3" width="1" height="3" fill="#B07A45"/><rect x="10" y="1" width="5" height="4" fill="#B07A45"/><rect x="10" y="1" width="2" height="3" fill="#6B4423"/>
 <rect x="14" y="3" width="2" height="2" fill="#EAD7B7"/><rect x="15" y="3" width="1" height="1" fill="#111"/>
-<rect x="9" y="5" width="2" height="1" fill="#F5B544"/>
+<rect x="9" y="5" width="2" height="1" fill="#7AA2F7"/>
 <g id="shades"><rect x="12" y="2" width="1" height="1" fill="#0B0F14"/><rect x="13" y="2" width="2" height="1" fill="#0B0F14"/><rect x="13" y="2" width="1" height="1" fill="#5CC8FF"/></g>
 <rect id="eyeShut" x="13" y="2" width="2" height="1" fill="#3B2414" opacity="0"/>
 <rect x="14" y="4" width="1" height="1" fill="#3B2414"/>
@@ -168,7 +168,7 @@ nav a{padding:12px;color:var(--soft);text-decoration:none;font-size:15px;font-we
 </div>
 </div></section>
 
-<section id="contact"><div class="wrap" style="padding:112px 32px 104px;display:flex;flex-direction:column;gap:24px">
+<section id="contact"><div class="wrap" style="padding-top:112px;padding-bottom:104px;display:flex;flex-direction:column;gap:24px">
 <span class="label">~/contact</span>
 <h2 style="font-size:clamp(36px,4.4vw,56px);line-height:1.08">Get in touch</h2>
 <p style="margin:0;max-width:600px;font-size:18px;color:var(--soft)">Open to Summer 2027 software engineering internships and new grad roles in Montreal, Toronto or remote in Canada.</p>
@@ -324,7 +324,7 @@ function runner(gy, sc) {
     <rect x="0" y="1" width="1" height="2" fill="${F}"/><rect x="1" y="2" width="1" height="3" fill="${F}"/>
     <rect x="2" y="5" width="9" height="4" fill="${F}"/><rect x="4" y="5" width="4" height="1" fill="#8F5F33"/><rect x="4" y="8" width="5" height="1" fill="#EAD7B7"/>
     <rect x="9" y="3" width="1" height="3" fill="${F}"/><rect x="10" y="1" width="5" height="4" fill="${F}"/><rect x="10" y="1" width="2" height="3" fill="#6B4423"/>
-    <rect x="14" y="3" width="2" height="2" fill="#EAD7B7"/><rect x="15" y="3" width="1" height="1" fill="#111"/><rect x="9" y="5" width="2" height="1" fill="#F5B544"/>
+    <rect x="14" y="3" width="2" height="2" fill="#EAD7B7"/><rect x="15" y="3" width="1" height="1" fill="#111"/><rect x="9" y="5" width="2" height="1" fill="#7AA2F7"/>
     <rect x="12" y="2" width="1" height="1" fill="#0B0F14"/><rect x="13" y="2" width="2" height="1" fill="#0B0F14"/><rect x="13" y="2" width="1" height="1" fill="#5CC8FF"/>
     <g fill="${F}">${air ? legsJ : (frame ? legsB : legsA)}</g></svg>`;
 }
