@@ -191,8 +191,7 @@ const cmds = {
   neofetch: ['neofetch', 'asifur@macbook\nos       macOS\nlangs    Java, Python, C++\nschool   final year, CS @ Concordia'],
   status: ['echo "open to work"', 'open to work'],
   gitlog: ['git log -1 --oneline', 'd06f076 Update README.md'],
-  ls: ['ls ~/projects', '3d-engine/  service-booking/  bixi-forecaster/  signal-analyzer/  heap/'],
-  setup: ['cat ~/setup.txt', 'Claude Code, VS Code, IntelliJ IDEA, Git, LaTeX']
+  ls: ['ls ~/projects', '3d-engine/  service-booking/  bixi-forecaster/  signal-analyzer/  heap/']
 };
 let hist = ['neofetch', 'status', 'gitlog'];
 function drawTerm() {
@@ -200,7 +199,7 @@ function drawTerm() {
     `<div><div><span style="color:var(--accent)">$</span> <span style="color:var(--ink)">${esc(cmds[k][0])}</span></div><div class="out">${esc(cmds[k][1])}</div></div>`
   ).join('') + '<div style="display:flex;gap:8px;align-items:center"><span style="color:var(--accent)">$</span><span class="cursor" style="width:8px;height:17px;background:#D5DBE3"></span></div>';
 }
-[['neofetch', 'neofetch'], ['status', 'echo "open to work"'], ['gitlog', 'git log -1'], ['ls', 'ls ~/projects'], ['setup', 'cat ~/setup.txt']].forEach(([k, label]) => {
+[['neofetch', 'neofetch'], ['status', 'echo "open to work"'], ['gitlog', 'git log -1'], ['ls', 'ls ~/projects']].forEach(([k, label]) => {
   const b = document.createElement('button');
   b.type = 'button'; b.className = 'chip'; b.textContent = label;
   b.onclick = () => { hist = hist.concat([k]).slice(-4); drawTerm(); };
