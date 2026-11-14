@@ -37,7 +37,7 @@ nav a{padding:12px;color:var(--soft);text-decoration:none;font-size:15px;font-we
 .hero h1{margin:0;font-family:var(--head);font-weight:600;font-size:clamp(40px,5vw,64px);line-height:1.06;letter-spacing:-.025em;color:var(--ink)}
 .term{background:var(--panel2);border:1px solid var(--line2);border-radius:14px;overflow:hidden}
 .term-top{display:flex;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted)}
-.term-body{height:300px;padding:18px;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;font-family:var(--mono);font-size:14px;line-height:1.5;overflow:hidden}
+.term-body{height:340px;padding:18px;display:flex;flex-direction:column;gap:12px;font-family:var(--mono);font-size:14px;line-height:1.5;overflow-y:auto;cursor:text}
 .term-body .out{color:var(--muted);white-space:pre-wrap}
 #dog{position:absolute;bottom:14px;left:8px;width:88px;height:64px;padding:0;background:transparent;border:0;animation:stroll 16s linear infinite}
 #dog .flip{position:absolute;inset:0;animation:face 16s linear infinite}
@@ -179,25 +179,52 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // terminal
+const P = (t) => t; // plain output
 const cmds = {
-  neofetch: ['whoami', 'name     Asifur (Asif) Rahman\nrole     software engineer, prev @ BMO Capital Markets\nos       macOS\nlangs    Java, Python, C++\nschool   final year, CS @ Concordia'],
-  status: ['echo "open to work"', 'open to work'],
-  gitlog: ['git log -1 --oneline', 'd06f076 Update README.md'],
-  ls: ['ls ~/projects', 'hammerfall-grove/  service-booking-platform/  bixi-demand-forecaster/  cell-coverage-analyzer/']
+  whoami: () => 'name     Asifur (Asif) Rahman\nrole     software engineer, prev @ BMO Capital Markets\nschool   final year, CS (Co-op) @ Concordia\nbased    Montreal (open to Toronto / remote)\ntip      type "help" to see everything',
+  help: () => 'whoami  experience  projects  skills  education  status\nlooking-for  contact  email  github  linkedin  stack\nfun-fact  game  pet  history  clear',
+  experience: () => 'BMO Capital Markets   Platform & Infrastructure Development\n  Java, Spring Boot, AWS (Lambda, S3, Bedrock), PostgreSQL,\n  Jenkins, Ansible, Liquibase, CI/CD\nHEXA                  Java, Spring Boot, React, microservices',
+  projects: () => 'hammerfall-grove/          C++ / OpenGL game, five-light shadows\nbixi-demand-forecaster/    Python ML, hourly bike demand\nservice-booking-platform/  Node, Express, MongoDB REST API\ncell-coverage-analyzer/    Python, base station heatmaps\n→ scroll down to ~/projects for details',
+  skills: () => 'languages  Java, Python, C++, JavaScript, SQL\nbackend    Spring Boot, Node.js, Express, REST, microservices\ncloud      AWS (Lambda, S3, Bedrock), Aurora PostgreSQL\ndevops     Jenkins, Ansible, Liquibase, Maven, Git, CI/CD',
+  stack: () => 'editor  VS Code / IntelliJ\nai      Claude\nos      macOS\nshell   zsh',
+  education: () => 'Concordia University, Gina Cody School\nB.Comp.Sc. (Co-op), final year',
+  status: () => 'open to work ✓',
+  'looking-for': () => '2027 software engineering internships and new grad roles.\nBackend, platform, infra or full stack. Toronto, Montreal or remote.',
+  contact: () => 'email     asifur970@gmail.com\nlinkedin  linkedin.com/in/asifurrahman7\ngithub    github.com/asifur-rahman9',
+  email: () => { location.href = 'mailto:asifur970@gmail.com'; return 'opening mail client… asifur970@gmail.com'; },
+  github: () => { window.open('https://github.com/asifur-rahman9', '_blank'); return 'opening github.com/asifur-rahman9…'; },
+  linkedin: () => { window.open('https://linkedin.com/in/asifurrahman7', '_blank'); return 'opening linkedin.com/in/asifurrahman7…'; },
+  'fun-fact': () => ['My dog in the corner sleeps if you ignore him. Click him.', 'This terminal is ~60 lines of vanilla JS.'][Math.floor(Math.random() * 2)],
+  game: () => { document.querySelector('#break, [id*=break]')?.scrollIntoView({ behavior: 'smooth' }); return 'scrolling to the game…'; },
+  pet: () => { $('#dog')?.click(); return 'the dog appreciates it ♥'; },
+  history: () => log.map((l) => l.c).join('\n') || '(empty)',
+  'sudo hire-asif': () => 'permission granted. reach out: asifur970@gmail.com',
+  ls: () => cmds.projects(),
 };
-let hist = ['neofetch', 'status', 'gitlog'];
-function drawTerm() {
-  $('#term').innerHTML = hist.slice(-4).map((k) =>
-    `<div><div><span style="color:var(--accent)">$</span> <span style="color:var(--ink)">${esc(cmds[k][0])}</span></div><div class="out">${esc(cmds[k][1])}</div></div>`
-  ).join('') + '<div style="display:flex;gap:8px;align-items:center"><span style="color:var(--accent)">$</span><span class="cursor" style="width:8px;height:17px;background:#D5DBE3"></span></div>';
+let log = [];
+const term = $('#term');
+function run(c) {
+  c = c.trim(); if (!c) return;
+  if (c === 'clear') { log = []; return drawTerm(); }
+  const f = cmds[c] || cmds[c.toLowerCase()];
+  log.push({ c, o: f ? f() : `command not found: ${c}\ntype "help" for a list` });
+  log = log.slice(-12); drawTerm();
 }
-[['neofetch', 'whoami'], ['status', 'echo "open to work"'], ['gitlog', 'git log -1'], ['ls', 'ls ~/projects']].forEach(([k, label]) => {
+function drawTerm() {
+  term.innerHTML = log.map((l) =>
+    `<div><div><span style="color:var(--accent)">$</span> <span style="color:var(--ink)">${esc(l.c)}</span></div><div class="out">${esc(l.o)}</div></div>`
+  ).join('') + '<div style="display:flex;gap:8px;align-items:center"><span style="color:var(--accent)">$</span><input id="tin" aria-label="Type a command" autocomplete="off" spellcheck="false" placeholder="type a command, or help" style="flex:1;background:none;border:0;outline:0;color:var(--ink);font:inherit;caret-color:var(--accent)"></div>';
+  term.scrollTop = term.scrollHeight;
+  const i = $('#tin'); i.onkeydown = (e) => { if (e.key === 'Enter') { run(i.value); $('#tin').focus({ preventScroll: true }); } };
+}
+term.onclick = () => $('#tin')?.focus({ preventScroll: true });
+['whoami', 'help', 'experience', 'projects', 'skills', 'education', 'looking-for', 'status', 'contact', 'stack', 'email', 'github', 'linkedin', 'fun-fact', 'pet', 'game', 'sudo hire-asif', 'clear'].forEach((k) => {
   const b = document.createElement('button');
-  b.type = 'button'; b.className = 'chip'; b.textContent = label;
-  b.onclick = () => { hist = hist.concat([k]).slice(-4); drawTerm(); };
+  b.type = 'button'; b.className = 'chip'; b.textContent = k;
+  b.onclick = () => run(k);
   $('#chips').appendChild(b);
 });
-drawTerm();
+run('whoami');
 
 // dog
 const dog = $('#dog');
