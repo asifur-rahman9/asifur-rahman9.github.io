@@ -33,7 +33,7 @@ header .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:spac
 nav{display:flex;flex-wrap:wrap;align-items:center;gap:2px}
 nav a{padding:12px;color:var(--soft);text-decoration:none;font-size:15px;font-weight:500}
 #about{position:relative;overflow:hidden;background-image:radial-gradient(#1C2430 1px,transparent 1px);background-size:24px 24px}
-.hero{padding-top:104px;padding-bottom:140px;display:flex;flex-wrap:wrap;gap:56px;align-items:center}
+.hero{padding-top:64px;padding-bottom:120px;display:flex;flex-wrap:wrap;gap:56px;align-items:center}
 .hero h1{margin:0;font-family:var(--head);font-weight:600;font-size:clamp(40px,5vw,64px);line-height:1.06;letter-spacing:-.025em;color:var(--ink)}
 .term{background:var(--panel2);border:1px solid var(--line2);border-radius:14px;overflow:hidden}
 .term-top{display:flex;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted)}
@@ -86,20 +86,11 @@ nav a{padding:12px;color:var(--soft);text-decoration:none;font-size:15px;font-we
 <header><div class="wrap">
 <a class="logo" href="#about">Asifur Rahman<span class="cursor" aria-hidden="true"></span></a>
 <nav aria-label="Primary">
-<a href="#projects">Projects</a><a href="#toolbox">Toolbox</a><a href="#contact">Contact</a>
+<a href="#projects">Projects</a><a href="#toolbox">Toolbox</a><a href="#contact">Contact</a><a href="https://github.com/asifur-rahman9">GitHub</a><a href="https://linkedin.com/in/asifurrahman7">LinkedIn</a>
 </nav>
 </div></header>
 
 <section id="about"><div class="wrap hero">
-<div style="flex:999 1 500px;min-width:0;display:flex;flex-direction:column;gap:28px">
-<span class="label">~/about</span>
-<h1>Hi, I'm Asif!</h1>
-<div style="display:flex;flex-wrap:wrap;gap:12px">
-
-<a class="btn" href="https://github.com/asifur-rahman9">GitHub</a>
-<a class="btn" href="https://linkedin.com/in/asifurrahman7">LinkedIn</a>
-</div>
-</div>
 <div style="flex:1 1 400px;min-width:0;display:flex;flex-direction:column;gap:14px">
 <div class="term" role="region" aria-label="Interactive terminal">
 <div class="term-top"><span>asifur@concordia: ~</span><span>zsh</span></div>
@@ -189,7 +180,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 
 // terminal
 const cmds = {
-  neofetch: ['neofetch', 'asifur@macbook\nos       macOS\nlangs    Java, Python, C++\nschool   final year, CS @ Concordia'],
+  neofetch: ['neofetch', 'asifur@macbook\nname     Asifur (Asif) Rahman\nrole     software engineer, ex-BMO\nos       macOS\nlangs    Java, Python, C++\nschool   final year, CS @ Concordia'],
   status: ['echo "open to work"', 'open to work'],
   gitlog: ['git log -1 --oneline', 'd06f076 Update README.md'],
   ls: ['ls ~/projects', 'hammerfall-grove/  service-booking-platform/  bixi-demand-forecaster/  cell-coverage-analyzer/']
