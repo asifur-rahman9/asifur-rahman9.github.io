@@ -1,0 +1,113 @@
+---
+import Base from '../layouts/Base.astro';
+import Terminal from '../components/Terminal.tsx';
+import Dog from '../components/Dog.tsx';
+import ProjectExplorer from '../components/ProjectExplorer.tsx';
+import Toolbox from '../components/Toolbox.tsx';
+import DogGame from '../components/DogGame.tsx';
+import { site, experience, projects, minorProjects, toolGroups, usedIn } from '../data/site';
+const year = new Date().getFullYear();
+---
+<Base>
+  <header><div class="wrap">
+    <a class="logo" href="#about">Asifur Rahman<span class="cursor" aria-hidden="true"></span></a>
+    <nav aria-label="Primary">
+      <a href="#experience">Experience</a><a href="#projects">Projects</a><a class="ext" href="#toolbox">Toolbox</a><a href="#contact">Contact</a>
+      <a class="ext" href={site.github}>GitHub</a><a class="ext" href={site.linkedin}>LinkedIn</a>
+    </nav>
+  </div></header>
+
+  <main>
+    <section id="about"><div class="wrap hero">
+      <div class="hero-text">
+        <span class="status"><i aria-hidden="true"></i>{site.status}</span>
+        <h1>I build backend systems and the <em>pipelines that ship them.</em></h1>
+        <p class="lede">Final-year CS (Co-op) at Concordia. Two co-op terms at BMO Capital Markets on platform and infrastructure: Java services, AWS, Jenkins and database automation.</p>
+        <div class="ctas">
+          <a class="btn primary" href="#projects">See my projects</a>
+          {site.resume && <a class="btn" href={site.resume}>Resume ↓</a>}
+          <a class="btn" href={`mailto:${site.email}`}>Email me</a>
+          <a class="btn" href={site.github}>GitHub ↗</a>
+        </div>
+        <dl class="stats">
+          <div><dt>2</dt><dd>co-op terms at BMO</dd></div>
+          <div><dt>3</dt><dd>projects with tests + CI</dd></div>
+          <div><dt>2027</dt><dd>graduating, Concordia</dd></div>
+        </dl>
+      </div>
+      <Terminal client:load />
+    </div>
+    <Dog client:idle />
+    </section>
+
+    <section id="experience"><div class="wrap sec">
+      <div class="sec-head">
+        <span class="label">~/experience</span>
+        <h2>Experience</h2>
+      </div>
+      <div class="jobs">
+        {experience.map((j) => (
+          <article class="job">
+            <div class="job-org">
+              <h3>{j.org}</h3>
+              <p>{j.team}</p>
+              <div class="tags">{j.stack.map((s) => <span class="tag">{s}</span>)}</div>
+            </div>
+            <div class="roles">
+              {j.roles.map((r) => (
+                <div class="role">
+                  <div class="role-head"><h4>{r.title}</h4>{r.dates && <span>{r.dates}</span>}</div>
+                  <ul>{r.points.map((p) => <li>{p}</li>)}</ul>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div></section>
+
+    <section id="projects"><div class="wrap sec">
+      <div class="sec-head">
+        <span class="label">~/projects</span>
+        <h2>Projects</h2>
+        <p class="sub">My work as a commit history. Pick a commit to read it.</p>
+      </div>
+      <ProjectExplorer client:visible projects={projects} minor={minorProjects} github={site.github} />
+    </div></section>
+
+    <section id="toolbox"><div class="wrap sec">
+      <div class="sec-head">
+        <span class="label">~/toolbox</span>
+        <h2>Toolbox</h2>
+        <p class="sub">Pick a tool to see where I've used it.</p>
+      </div>
+      <Toolbox client:visible groups={toolGroups} usedIn={usedIn} />
+    </div></section>
+
+    <section id="break"><div class="wrap sec">
+      <div class="sec-head">
+        <span class="label">~/break</span>
+        <h2>Need a two-minute break?</h2>
+        <p class="sub">Help my dog hop over the cacti and grab snacks. Fish doubles your score, chicken triples it, shrimp gives 5x for five seconds. Click, tap or press Space to jump.</p>
+      </div>
+      <DogGame client:visible />
+    </div></section>
+
+    <section id="contact">
+      <div class="wrap contact">
+        <span class="label">~/contact</span>
+        <h2>Get in touch</h2>
+        <p>Open to Summer 2027 software engineering internships and new grad roles in Montreal, Toronto or remote in Canada. Email is the fastest way to reach me.</p>
+        <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
+        <div class="ctas">
+          <a class="btn" href={site.linkedin}>LinkedIn</a><a class="btn" href={site.github}>GitHub</a>
+          {site.resume && <a class="btn" href={site.resume}>Resume</a>}
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer><div class="wrap">
+    <span>© {year} Asifur Rahman · Montreal</span>
+    <a href="https://github.com/asifur-rahman9/asifur-rahman9.github.io">Built with Astro + React · View source</a>
+  </div></footer>
+</Base>
