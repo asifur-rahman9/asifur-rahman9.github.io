@@ -192,7 +192,7 @@ const cmds = {
   neofetch: ['neofetch', 'asifur@macbook\nos       macOS\nlangs    Java, Python, C++\nschool   final year, CS @ Concordia'],
   status: ['echo "open to work"', 'open to work'],
   gitlog: ['git log -1 --oneline', 'd06f076 Update README.md'],
-  ls: ['ls ~/projects', '3d-engine/  service-booking/  bixi-forecaster/  signal-analyzer/  heap/']
+  ls: ['ls ~/projects', 'hammerfall-grove/  service-booking-platform/  bixi-demand-forecaster/  cell-coverage-analyzer/']
 };
 let hist = ['neofetch', 'status', 'gitlog'];
 function drawTerm() {
@@ -230,17 +230,17 @@ sleepSoon();
 
 // projects
 const projects = [
-  { id: 'engine', hash: 'd06f076', date: 'Aug 2025', title: '3D rendering engine and game', summary: 'Raw OpenGL, shadows from five lights', meta: 'COMP 371', stack: ['C++', 'OpenGL', 'GLSL'], media: true,
+  { id: 'engine', hash: 'd06f076', date: 'Aug 2025', title: 'Hammerfall Grove: OpenGL game engine', summary: 'Raw OpenGL, shadows from five lights', meta: 'C++ / OpenGL', stack: ['C++', 'OpenGL', 'GLSL'], media: true,
     body: 'A real-time game built on raw OpenGL with no engine: the player chases a target while an articulated hammer arm swings at them. Shadows from five light sources, an OBJ model loader, a cubemap skybox and particle effects.',
-    part: 'the two-joint arm and its attack logic, the camera, and the project structure. Built with a partner for COMP 371.', href: 'https://github.com/asifur-rahman9/3D-rendering-engine-game' },
+    part: 'the two-joint arm and its attack logic, the camera, and the project structure. Built with a partner.', href: 'https://github.com/asifur-rahman9/hammerfall-grove' },
   { id: 'bixi', hash: 'da81117', date: 'Jun 2025', title: 'BIXI demand forecaster', summary: 'Hourly bike-share demand per station', meta: 'random forest', stack: ['Python', 'scikit-learn', 'Streamlit', 'pytest'],
-    body: "Forecasts hourly bike-share demand per station for Montreal's BIXI network. A random forest model, a Streamlit dashboard for forecasts and feature importance, and pytest tests on the data and prediction code.", href: 'https://github.com/asifur-rahman9/bike-station-monitor' },
+    body: "Forecasts hourly bike-share demand per station for Montreal's BIXI network. A random forest model, a Streamlit dashboard for forecasts and feature importance, and pytest tests on the data and prediction code.", href: 'https://github.com/asifur-rahman9/bixi-demand-forecaster' },
   { id: 'booking', hash: 'e05edd7', date: 'Dec 2024', title: 'Service booking platform', summary: 'REST API with admin and customer dashboards', meta: 'REST API, 5 resources', stack: ['Node.js', 'Express', 'MongoDB', 'JavaScript'],
-    body: 'Businesses list services, and customers book and pay for appointments. A REST API over MongoDB, with separate admin and customer dashboards.', href: 'https://github.com/asifur-rahman9/fullstack-services-app' }
+    body: 'Businesses list services, and customers book and pay for appointments. A REST API over MongoDB, with separate admin and customer dashboards.', href: 'https://github.com/asifur-rahman9/service-booking-platform' }
 ];
 const minor = [
   ['684e586', 'NeetCode: DSA practice in Python', 'neetcode-submissions'],
-  ['2fa4a91', 'Signal analyzer: base station heatmaps', 'station-signal-analyzer'],
+  ['2fa4a91', 'Cell coverage analyzer: base station heatmaps', 'cell-coverage-analyzer'],
   ['dbb5b1d', 'Heap from scratch in Java', 'heap-implementation']
 ];
 let sel = 'engine';
@@ -272,11 +272,11 @@ drawProjects();
 
 // toolbox
 const usedIn = {
-  'Java': 'BMO, HEXA, Heap from scratch', 'Python': 'BIXI forecaster, Signal analyzer, NeetCode', 'SQL': 'BMO, HEXA',
-  'JavaScript': 'Service booking platform, Concordia OER plugin', 'C++': '3D rendering engine', 'PHP': 'Concordia OER plugin',
-  'HTML/CSS': 'Service booking platform, Concordia OER plugin', 'Spring Boot': 'BMO, HEXA', 'React': 'HEXA',
+  'Java': 'BMO, HEXA, Heap from scratch', 'Python': 'BIXI forecaster, Coverage analyzer, NeetCode', 'SQL': 'BMO, HEXA',
+  'JavaScript': 'Service booking platform, WordPress plugin', 'C++': 'Hammerfall Grove', 'PHP': 'WordPress plugin',
+  'HTML/CSS': 'Service booking platform, WordPress plugin', 'Spring Boot': 'BMO, HEXA', 'React': 'HEXA',
   'Node.js': 'Service booking platform', 'Express.js': 'Service booking platform', 'Pytest': 'BIXI forecaster',
-  'Pandas': 'BIXI forecaster', 'NumPy': 'Signal analyzer', 'Scikit-learn': 'BIXI forecaster', 'OpenGL': '3D rendering engine',
+  'Pandas': 'BIXI forecaster', 'NumPy': 'Coverage analyzer', 'Scikit-learn': 'BIXI forecaster', 'OpenGL': 'Hammerfall Grove',
   'AWS (Lambda, S3, Bedrock)': 'BMO', 'Jenkins': 'BMO', 'Ansible': 'BMO', 'Liquibase': 'BMO', 'Git': 'everything on this page',
   'Maven': 'BMO', 'PostgreSQL (Aurora)': 'BMO', 'MongoDB': 'Service booking platform',
   'REST APIs': 'BMO, HEXA, Service booking platform', 'Microservices': 'HEXA', 'Multithreading': 'BMO', 'CI/CD': 'BMO'
