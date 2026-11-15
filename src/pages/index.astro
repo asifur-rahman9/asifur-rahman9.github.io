@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Terminal from '../components/Terminal.tsx';
-import Dog from '../components/Dog.tsx';
+import HeroScene from '../components/HeroScene.tsx';
 import ProjectExplorer from '../components/ProjectExplorer.tsx';
 import Toolbox from '../components/Toolbox.tsx';
 import DogGame from '../components/DogGame.tsx';
@@ -37,7 +37,7 @@ const year = new Date().getFullYear();
       </div>
       <Terminal client:load />
     </div>
-    <Dog client:idle />
+    <HeroScene client:load />
     </section>
 
     <section id="experience"><div class="wrap sec">
