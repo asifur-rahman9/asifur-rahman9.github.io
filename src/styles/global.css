@@ -133,7 +133,7 @@ kbd{padding:1px 6px;border:1px solid var(--line2);border-bottom-width:2px;border
 .repo:hover{text-decoration:underline}
 
 /* game */
-.game{--gw:min(1600px,calc(100vw - 48px));position:relative;display:block;width:var(--gw);margin-left:calc((100% - var(--gw)) / 2);height:320px;overflow:hidden;border:1px solid var(--line2);border-radius:16px;background:#BFE6F5;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.game{--gw:min(1200px,calc(100vw - 48px));position:relative;display:block;width:var(--gw);margin-left:calc((100% - var(--gw)) / 2);height:320px;overflow:hidden;border:1px solid var(--line2);border-radius:16px;background:#BFE6F5;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .game canvas{display:block}
 .game:focus-visible{outline:2px solid #fff;outline-offset:3px}
 .game-fallback{position:absolute;inset:0;display:grid;place-items:center}
