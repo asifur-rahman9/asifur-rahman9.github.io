@@ -60,7 +60,10 @@ export default function HeroScene() {
   });
   const [, render] = useState(0);
 
-  const home = () => Math.max(40, Math.min(s.current.w * 0.08, 150));
+  // Keep the scene inside the page's content column (.wrap: max 1200px, padding clamp(20px, 5vw, 64px)).
+  const inset = () => { const w = s.current.w; return Math.max(0, (w - 1200) / 2) + Math.min(64, Math.max(20, w * 0.05)); };
+  const right = () => s.current.w - inset(); // right edge of the content column
+  const home = () => inset() + 8;
   const rest = () => home() + SIT_SIZE.w * PX + 18;
 
   const pet = () => { const st = s.current; st.petUntil = st.t + 1.8; st.petKey++; render((n) => n + 1); };
@@ -69,7 +72,7 @@ export default function HeroScene() {
     const st = s.current;
     const measure = () => { st.w = box.current?.offsetWidth ?? st.w; };
     measure();
-    st.dogX = st.w - DOG_W - 48;
+    st.dogX = right() - DOG_W - 8;
     const ro = new ResizeObserver(measure);
     if (box.current) ro.observe(box.current);
     window.addEventListener('pet-dog', pet); // terminal "pet" command
@@ -109,7 +112,7 @@ export default function HeroScene() {
     // the developer
     switch (st.guyMode) {
       case 'walk':
-        st.guyX += GUY_SPEED * dt;
+        st.guyX += Math.max(GUY_SPEED, (home() + 70) / 4.5) * dt; // arrive in ~4.5s on any width
         if (st.guyX >= home()) { st.guyX = home(); st.guyMode = 'settle'; st.guyT = t; }
         break;
       case 'settle': // sits down, opens the laptop, screen glow fades in
@@ -118,7 +121,7 @@ export default function HeroScene() {
       case 'windup':
         if (t - st.guyT > 0.32) {
           st.guyMode = 'release'; st.guyT = t;
-          const x1 = rand(Math.max(rest() + 160, st.w * 0.45), st.w - 60);
+          const x1 = rand(Math.max(rest() + 160, st.w * 0.45), right() - 40);
           st.flight = { x0: home() + 16 * PX, x1, t0: t, dur: 0.55 + (x1 - home()) / 950 };
           st.dogMode = 'wait'; st.until = t + 0.2;
         }
