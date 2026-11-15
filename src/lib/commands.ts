@@ -98,6 +98,12 @@ table.ls = table.projects;
 export const commandNames = () => Object.keys(table).concat('history');
 export const helpCommands = ['about', 'experience', 'skills', 'contact', 'resume', 'clear'];
 
+/** Arrow-key browsing of helpCommands: the first press shows the first command, then it wraps both ways. */
+export function cycleCommand(current: number | null, step: 1 | -1, n = helpCommands.length): number {
+  if (current === null) return 0;
+  return (current + step + n) % n;
+}
+
 export function runCommand(raw: string, history: string[] = []): Result | null {
   const c = raw.trim().replace(/\s+/g, ' ');
   if (!c) return null;

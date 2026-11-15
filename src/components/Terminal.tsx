@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { commandNames, formatGitLog, runCommand } from '../lib/commands';
+import { commandNames, cycleCommand, formatGitLog, helpCommands, runCommand } from '../lib/commands';
 import { projects } from '../data/site';
 import { fetchActivity, repoSlug, timeAgo, type Activity } from '../lib/github';
 
@@ -28,7 +28,7 @@ type Line = { c: string; o: string };
 export default function Terminal() {
   const [log, setLog] = useState<Line[]>(() => [{ c: 'whoami', o: runCommand('whoami')!.output }]);
   const [value, setValue] = useState('');
-  const [hIdx, setHIdx] = useState<number | null>(null); // position while walking history
+  const [cIdx, setCIdx] = useState<number | null>(null); // position while browsing commands with the arrow keys
   const body = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
   const [typed, setTyped] = useState<string[]>(['whoami']); // command history, survives `clear`
@@ -43,7 +43,7 @@ export default function Terminal() {
   }, []);
 
   function run(cmd: string) {
-    setHIdx(null);
+    setCIdx(null);
     const res = runCommand(cmd, typed);
     if (!res) return;
     setTyped((t) => [...t, cmd.trim()].slice(-50));
@@ -73,12 +73,9 @@ export default function Terminal() {
       else if (hits.length > 1) setLog((l) => [...l, { c: value, o: hits.join('  ') }]);
     } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       e.preventDefault();
-      if (!typed.length) return;
-      const up = e.key === 'ArrowUp';
-      const i = hIdx === null ? (up ? typed.length - 1 : null) : Math.min(typed.length, Math.max(0, hIdx + (up ? -1 : 1)));
-      if (i === null || i >= typed.length) { setHIdx(null); setValue(''); return; }
-      setHIdx(i);
-      setValue(typed[i]);
+      const i = cycleCommand(cIdx, e.key === 'ArrowDown' ? 1 : -1);
+      setCIdx(i);
+      setValue(helpCommands[i]);
     } else if (e.key === 'l' && e.ctrlKey) {
       e.preventDefault();
       setLog([]);
@@ -88,7 +85,7 @@ export default function Terminal() {
   return (
     <div className="term" role="region" aria-label="Interactive terminal">
       <div className="term-top">
-        <span>asifur@concordia: ~</span>
+        <span>guest@asifur-rahman9.github.io: ~</span>
         <span>zsh</span>
       </div>
       <div className="term-body" ref={body} aria-live="polite" onClick={() => input.current?.focus({ preventScroll: true })}>
@@ -103,7 +100,7 @@ export default function Terminal() {
           <input
             ref={input}
             value={value}
-            onChange={(e) => { setValue(e.target.value); setHIdx(null); }}
+            onChange={(e) => { setValue(e.target.value); setCIdx(null); }}
             onKeyDown={onKey}
             aria-label="Type a command"
             autoComplete="off"
