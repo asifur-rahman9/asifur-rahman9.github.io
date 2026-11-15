@@ -207,13 +207,13 @@ export default function HeroScene() {
       <div className="desk" style={{ left: home() }} aria-hidden="true">
         {sitting ? (
           <Sprite rects={sitRects(pose, blink)} w={SEAT_SIZE.w} h={SEAT_SIZE.h}>
-            <rect className={`glow ${st.guyMode === 'settle' ? '' : 'on'}`} x="25" y="11" width="1" height="5" fill="#8AB4FF" />
+            <rect className={`glow ${st.guyMode === 'settle' ? '' : 'on'}`} x="23" y="11" width="1" height="5" fill="#8AB4FF" />
           </Sprite>
         ) : (
           <Sprite rects={FURNITURE} w={SEAT_SIZE.w} h={SEAT_SIZE.h} />
         )}
-        {!sipping && <span className="steam-wrap" style={{ left: 28 * PX, top: 13 * PX - 4 }}><i className="steam" /><i className="steam s2" /></span>}
-        {st.guyMode === 'code' && !sipping && <span key={glyphKey} className="glyph" style={{ left: 21 * PX, top: 6 * PX }}>{GLYPHS[glyphKey % GLYPHS.length]}</span>}
+        {!sipping && <span className="steam-wrap" style={{ left: 26 * PX, top: 13 * PX - 4 }}><i className="steam" /><i className="steam s2" /></span>}
+        {st.guyMode === 'code' && !sipping && <span key={glyphKey} className="glyph" style={{ left: 18 * PX, top: 5 * PX }}>{GLYPHS[glyphKey % GLYPHS.length]}</span>}
       </div>
 
       {!sitting && (

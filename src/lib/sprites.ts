@@ -95,85 +95,87 @@ Object.assign(PAL, {
   r: '#C46A5E', // smile
   N: '#8E5A44', n: '#6E4234', V: '#5E6B7C', // table top, edge, pedestal
 });
-const W32 = 32, H26 = 26;
+const W32 = 30, H26 = 26; // composite width/height in sprite pixels
 const blank = () => Array.from({ length: H26 }, () => Array<string>(W32).fill('.'));
 const paint = (g: string[][], rows: string[], dx = 0, dy = 0) =>
-  rows.forEach((row, y) => row.split('').forEach((ch, x) => { if (ch !== '.' && g[y + dy]) g[y + dy][x + dx] = ch; }));
+  rows.forEach((row, y) => row.split('').forEach((ch, x) => { if (ch !== '.' && g[y + dy] && x + dx < W32) g[y + dy][x + dx] = ch; }));
 
 const CHAIR = [
-  ...Array(9).fill(''),
-  '', '',
+  ...Array(11).fill(''),
   'AAa', 'AAa', 'AAa', 'AAa', 'AAa', 'AAa', 'AAa', 'AAa', 'AAa',
-  'AAAAAAAAAAAAAA',
-  'aaaaaaaaaaaaaa',
-  '.O..........O.', '.O..........O.', '.O..........O.', '.O..........O.',
+  'AAAAAAAAAAAA',
+  'aaaaaaaaaaaa',
+  '.O........O.', '.O........O.', '.O........O.', '.O........O.',
 ];
-// front-facing face (no beard), hoodie with drawstrings, jeans, white sneakers
+// three-quarter view toward the laptop: small head, no smile, hoodie, jeans, white sneakers
 const PERSON = [
-  '......HHHHHH.H',
-  '.....HHhhhHHHH',
-  '....HHHhhHHHHH',
-  '....HHHHHHHHHH',
-  '....HSSSSSSSSH',
-  '...sShhSSShhSs',
-  '...sSSESSSSESs',
-  '....SSSSSSSSS',
-  '....SSSSsSSSS',
-  '....SSrSSSrSS',
-  '.....sSrrrSs',
-  '......sSSSs',
-  '...LLBBBBBBLL',
-  '..BBBBBDBDBBBB',
-  '..BBBBBDBDBBBB',
-  '..BBBBBBBBBBBB',
-  '..BBBBbbbbBBBB',
-  '..bbbbbbbbbbbb',
-  '..PPPPPPPPPPPPPPPP',
-  '..ppPPPPPPPPPPPPPP',
-  '..............PPPP',
-  '..............PPPP',
-  '..............PPPP',
-  '..............pPPp',
-  '..............KKKKK',
-  '..............kkkkk',
+  '',
+  '',
+  '....HHHHHH',
+  '...HHhhHHHH',
+  '...HHHhHHHHH',
+  '...HHHSSSSSH',
+  '...HHsSSESES',
+  '...HHsSSSSSS',
+  '....HSSSSSSSS',
+  '....HSSSSSSS',
+  '.....sSSSSs',
+  '......sSs',
+  '...LLBBBBL',
+  '...BBBDBDBB',
+  '...BBBDBDBB',
+  '...BBBBBBBB',
+  '...BBBbbbBB',
+  '...bbbbbbbb',
+  '...PPPPPPPPPPP',
+  '...ppPPPPPPPPP',
+  '..........PPPP',
+  '..........PPPP',
+  '..........PPPP',
+  '..........pPPp',
+  '..........KKKKK',
+  '..........kkkkk',
 ];
 const TABLE = [
   ...Array(17).fill(''),
-  'NNNNNNNNNNNNNNN',
-  '.nnnnnnnnnnnnn.',
+  'NNNNNNNNNNNNNNNN',
+  '.nnnnnnnnnnnnnn.',
   '.......VV', '.......VV', '.......VV', '.......VV', '.......VV', '.......VV',
   '....VVVVVVVV',
 ];
 const DESK_MUG = [...Array(13).fill(''), '.WCW', '.WWWW', '.WWWW', '.www'];
 const LAPTOP = [
   ...Array(10).fill(''),
-  '........m', '........m', '.......m', '.......m', '.......m', '.......m',
-  'MMMMMMMm',
+  '.........m', '.........m', '........m', '........m', '........m', '........m',
+  'MMMMMMMMm',
 ];
 
 function scene(withPerson: boolean): string[] {
   const g = blank();
   paint(g, CHAIR);
   if (withPerson) paint(g, PERSON);
-  paint(g, TABLE, 17);
-  paint(g, DESK_MUG, 27);
-  if (withPerson) paint(g, LAPTOP, 19);
+  paint(g, TABLE, 14);
+  paint(g, DESK_MUG, 25);
+  if (withPerson) paint(g, LAPTOP, 16);
   return g.map((r) => r.join(''));
 }
 
-const SLEEVE_TYPE: Pix[] = [[14, 13, 'L'], [15, 14, 'L'], [16, 14, 'L'], [17, 15, 'L'], [18, 15, 'L'], [19, 15, 'L']];
-const ARM_TYPE_A: Pix[] = [...SLEEVE_TYPE, [20, 15, 'S'], [22, 15, 'S']];
-const ARM_TYPE_B: Pix[] = [...SLEEVE_TYPE, [21, 15, 'S'], [23, 14, 'S']];
-const ARM_WINDUP: Pix[] = [[14, 12, 'L'], [15, 11, 'L'], [15, 10, 'L'], [16, 9, 'L'], [16, 8, 'S'], [15, 7, 'T'], [14, 6, 'T'], [13, 5, 'T'], [12, 4, 'T']];
-const ARM_RELEASE: Pix[] = [[14, 13, 'L'], [15, 12, 'L'], [16, 11, 'L'], [17, 10, 'L'], [18, 9, 'L'], [19, 8, 'S']];
-// sip: mug lifted from the table to his mouth
-const ARM_SIP: Pix[] = [[14, 13, 'L'], [14, 12, 'L'], [13, 11, 'L'], [12, 10, 'S'], [9, 8, 'W'], [10, 8, 'W'], [11, 8, 'W'], [9, 9, 'W'], [10, 9, 'W'], [11, 9, 'W'], [9, 10, 'w'], [10, 10, 'w'], [11, 10, 'w'],
-  ...[28, 29, 30, 31].flatMap((x) => [13, 14, 15, 16].map((y) => [x, y, '.'] as Pix))];
-const BLINK: Pix[] = [[6, 6, 's'], [11, 6, 's']];
+// far arm (darker, behind) and near arm (lighter) both reach the keyboard
+const FAR_ARM: Pix[] = [[11, 13, 'b'], [12, 13, 'b'], [13, 14, 'b'], [14, 14, 'b'], [15, 14, 'b'], [16, 14, 'b'], [17, 14, 'b'], [18, 14, 'b']];
+const NEAR_ARM: Pix[] = [[11, 14, 'L'], [12, 14, 'L'], [13, 15, 'L'], [14, 15, 'L'], [15, 15, 'L'], [16, 15, 'L']];
+const ARM_TYPE_A: Pix[] = [...FAR_ARM, [19, 15, 'S'], ...NEAR_ARM, [17, 15, 'S']];
+const ARM_TYPE_B: Pix[] = [...FAR_ARM, [19, 14, 'S'], ...NEAR_ARM, [18, 15, 'S']];
+const ARM_WINDUP: Pix[] = [...FAR_ARM, [19, 15, 'S'], [11, 11, 'L'], [12, 10, 'L'], [12, 9, 'L'], [12, 8, 'L'], [12, 7, 'S'], [11, 6, 'T'], [10, 5, 'T'], [9, 4, 'T'], [8, 3, 'T']];
+const ARM_RELEASE: Pix[] = [...FAR_ARM, [19, 15, 'S'], [11, 11, 'L'], [12, 10, 'L'], [13, 9, 'L'], [14, 8, 'L'], [15, 7, 'S']];
+// sip: near arm lifts the desk mug to his mouth; far hand stays on the keyboard
+const ARM_SIP: Pix[] = [...FAR_ARM, [19, 15, 'S'], [11, 13, 'L'], [11, 12, 'L'], [12, 11, 'S'],
+  [11, 8, 'W'], [12, 8, 'W'], [13, 8, 'W'], [11, 9, 'W'], [12, 9, 'W'], [13, 9, 'W'], [11, 10, 'w'], [12, 10, 'w'], [13, 10, 'w'],
+  ...[26, 27, 28, 29].flatMap((x) => [13, 14, 15, 16].map((y) => [x, y, '.'] as Pix))];
+const BLINK: Pix[] = [[8, 6, 's'], [10, 6, 's']];
 
 export const SEAT_SIZE = { w: W32, h: H26 };
 /** where the stick leaves his hand on release, in sprite pixels */
-export const RELEASE_HAND = { x: 19, y: 8 };
+export const RELEASE_HAND = { x: 15, y: 7 };
 export const FURNITURE = toRects(scene(false));
 export type SitPose = 'typeA' | 'typeB' | 'windup' | 'release' | 'sip';
 const ARMS: Record<SitPose, Pix[]> = { typeA: ARM_TYPE_A, typeB: ARM_TYPE_B, windup: ARM_WINDUP, release: ARM_RELEASE, sip: ARM_SIP };
