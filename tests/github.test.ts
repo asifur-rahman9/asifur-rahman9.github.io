@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fetchActivity, parseCommits, repoSlug, shortDate, timeAgo } from '../src/lib/github';
+import { fetchActivity, fetchRepos, parseCommits, parseRepos, rawUrl, repoSlug, shortDate, timeAgo } from '../src/lib/github';
 
 const raw = [
   { sha: 'abcdef1234567', html_url: 'https://github.com/o/r/commit/abcdef1', commit: { message: 'feat: add risk board\n\nlong body', committer: { date: '2026-11-14T20:00:00Z' } } },
@@ -41,5 +41,25 @@ describe('github helpers', () => {
     const out = await fetchActivity(['o/good', 'o/bad'], 'token');
     expect(Object.keys(out)).toEqual(['o/good']);
     expect(out['o/good']).toHaveLength(2);
+  });
+
+  it('keeps each repo description and last push, keyed by full name', () => {
+    const repos = parseRepos([
+      { full_name: 'o/a', description: ' Booking app ', pushed_at: '2026-11-15T09:00:00Z' },
+      { full_name: 'o/b', description: null, pushed_at: '2026-11-01T00:00:00Z' },
+    ]);
+    expect(repos['o/a']).toEqual({ description: 'Booking app', pushedAt: '2026-11-15T09:00:00Z' });
+    expect(repos['o/b'].description).toBe('');
+    expect(parseRepos({ message: 'API rate limit exceeded' })).toEqual({});
+  });
+
+  it('returns no repos instead of throwing when GitHub is unreachable', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline'); }));
+    expect(await fetchRepos('o')).toEqual({});
+  });
+
+  it('builds raw file URLs on the default branch', () => {
+    expect(rawUrl('https://github.com/o/r', 'docs/media/a.jpg')).toBe('https://raw.githubusercontent.com/o/r/HEAD/docs/media/a.jpg');
+    expect(rawUrl('https://github.com/o/r/', '/docs/a.png')).toBe('https://raw.githubusercontent.com/o/r/HEAD/docs/a.png');
   });
 });

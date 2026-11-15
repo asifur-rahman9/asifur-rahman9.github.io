@@ -18,7 +18,7 @@ export const banner =
 
 // Short names for `open <name>`; values are project ids in site.ts.
 export const projectAliases: Record<string, string> = {
-  bixi: 'bixi', booking: 'booking', hammerfall: 'engine', engine: 'engine',
+  campusshare: 'campusshare', grpc: 'campusshare', bixi: 'bixi', booking: 'booking', hammerfall: 'engine', engine: 'engine',
 };
 
 const pad = (s: string, n: number) => s.padEnd(n);
@@ -68,7 +68,7 @@ const table: Record<string, (arg: string) => Result> = {
   }),
   open: (arg) => {
     const id = projectAliases[arg.toLowerCase()];
-    if (!id) return { output: `no project called "${arg}". try: ${Object.keys(projectAliases).filter((k) => k !== 'engine').join(', ')}` };
+    if (!id) return { output: `no project called "${arg}". try: ${Object.keys(projectAliases).filter((k) => k !== 'engine' && k !== 'grpc').join(', ')}` };
     return { output: `opening ${arg}…`, action: { type: 'project', id } };
   },
   'git log': () => ({ output: 'fetching commits…', action: { type: 'gitlog' } }),

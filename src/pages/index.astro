@@ -5,9 +5,15 @@ import HeroScene from '../components/HeroScene.tsx';
 import ProjectExplorer from '../components/ProjectExplorer.tsx';
 import DuckGame from '../components/DuckGame.tsx';
 import { site, projects, minorProjects } from '../data/site';
-import { fetchActivity, repoSlug } from '../lib/github';
-// Commit data baked in at build time; CI passes GITHUB_TOKEN for a higher rate limit.
-const activity = await fetchActivity(projects.map((p) => repoSlug(p.repo)), process.env.GITHUB_TOKEN);
+import { fetchActivity, fetchRepos, repoSlug } from '../lib/github';
+// GitHub data baked in at build time (the browser refreshes it on load).
+// CI passes GITHUB_TOKEN for a higher rate limit.
+const user = repoSlug(site.github);
+const slugs = [...projects.map((p) => repoSlug(p.repo)), ...minorProjects.map((m) => `${user}/${m.repo}`)];
+const [activity, repos] = await Promise.all([
+  fetchActivity(slugs, process.env.GITHUB_TOKEN, 5),
+  fetchRepos(user, process.env.GITHUB_TOKEN),
+]);
 const year = new Date().getFullYear();
 ---
 <Base>
@@ -33,7 +39,7 @@ const year = new Date().getFullYear();
         <h2>Projects</h2>
         <p class="sub">My work as a commit history. Pick a commit to read it.</p>
       </div>
-      <ProjectExplorer client:idle projects={projects} minor={minorProjects} github={site.github} initial={activity} />
+      <ProjectExplorer client:idle projects={projects} minor={minorProjects} github={site.github} initial={activity} initialRepos={repos} />
     </div></section>
 
     <section id="break"><div class="wrap sec">

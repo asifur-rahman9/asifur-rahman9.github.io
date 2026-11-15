@@ -4,11 +4,17 @@
 
 export type Commit = { sha: string; message: string; date: string; url: string };
 export type Activity = Record<string, Commit[]>; // keyed by "owner/repo"
+export type RepoInfo = { description: string; pushedAt: string };
+export type Repos = Record<string, RepoInfo>; // keyed by "owner/repo"
 
 const API = 'https://api.github.com';
 
-/** "https://github.com/owner/repo" -> "owner/repo" */
+/** "https://github.com/owner/repo" -> "owner/repo" (or just "owner" for a profile URL) */
 export const repoSlug = (url: string) => url.replace(/^https:\/\/github\.com\//, '').replace(/\/$/, '');
+
+/** A file in a repo's default branch, served by GitHub (updates when the repo does). */
+export const rawUrl = (repo: string, path: string) =>
+  `https://raw.githubusercontent.com/${repoSlug(repo)}/HEAD/${path.replace(/^\/+/, '')}`;
 
 /** Keep only what the page needs from the /commits response. */
 export function parseCommits(json: unknown, limit = 3): Commit[] {
@@ -21,10 +27,33 @@ export function parseCommits(json: unknown, limit = 3): Commit[] {
   })).filter((c) => c.sha && c.date);
 }
 
+const headersFor = (token?: string) => {
+  const h: Record<string, string> = { Accept: 'application/vnd.github+json' };
+  if (token) h.Authorization = `Bearer ${token}`;
+  return h;
+};
+
+/** Keep only the description and last push of each repo from /users/:user/repos. */
+export function parseRepos(json: unknown): Repos {
+  if (!Array.isArray(json)) return {};
+  const out: Repos = {};
+  for (const r of json as any[]) {
+    if (r?.full_name) out[r.full_name] = { description: String(r.description ?? '').trim(), pushedAt: r.pushed_at ?? '' };
+  }
+  return out;
+}
+
+/** Descriptions for every public repo in one request. Empty on failure, never thrown. */
+export async function fetchRepos(user: string, token?: string): Promise<Repos> {
+  try {
+    const res = await fetch(`${API}/users/${user}/repos?per_page=100&sort=pushed`, { headers: headersFor(token) });
+    return res.ok ? parseRepos(await res.json()) : {};
+  } catch { return {}; }
+}
+
 /** Fetch recent commits for each repo. Failed repos are left out, never thrown. */
 export async function fetchActivity(slugs: string[], token?: string, limit = 3): Promise<Activity> {
-  const headers: Record<string, string> = { Accept: 'application/vnd.github+json' };
-  if (token) headers.Authorization = `Bearer ${token}`;
+  const headers = headersFor(token);
   const out: Activity = {};
   await Promise.all(slugs.map(async (slug) => {
     try {
