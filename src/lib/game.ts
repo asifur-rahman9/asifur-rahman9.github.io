@@ -318,7 +318,7 @@ export function mountGame(host: HTMLElement): () => void {
   }
 
   // loop, paused when off screen or in a background tab
-  let raf = 0, last = 0, visible = false;
+  let raf = 0, last = 0, visible = false, mostlyVisible = false;
   const loop = (now: number) => {
     const dt = Math.max(0, Math.min(0.033, (now - last) / 1000 || 0)); // never step backwards
     last = now;
@@ -327,15 +327,29 @@ export function mountGame(host: HTMLElement): () => void {
   };
   const play = () => { if (!raf && visible && !document.hidden) { last = performance.now(); raf = requestAnimationFrame(loop); } };
   const stop = () => { cancelAnimationFrame(raf); raf = 0; };
-  const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? play() : stop(); });
+  const io = new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    mostlyVisible = e.intersectionRatio >= 0.5; // Space only drives the game when it's actually on screen
+    visible ? play() : stop();
+  }, { threshold: [0, 0.5, 1] });
   io.observe(host);
   const onVis = () => (document.hidden ? stop() : play());
   document.addEventListener('visibilitychange', onVis);
 
-  const onPointer = (e: PointerEvent) => { e.preventDefault(); press(); };
-  const onKey = (e: KeyboardEvent) => { if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'Enter') { e.preventDefault(); press(); } };
+  // Pointer: focus the game (preventDefault would block focus) and jump.
+  const onPointer = (e: PointerEvent) => { if (e.button !== 0) return; host.focus({ preventScroll: true }); press(); };
+  // Keys are listened for on the window, so Space works whether or not the game has focus,
+  // as long as the game is on screen and the visitor isn't typing (e.g. in the terminal).
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key !== ' ' && e.key !== 'ArrowUp') return;
+    const t = e.target as HTMLElement | null;
+    const typing = !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+    if (typing || (!mostlyVisible && document.activeElement !== host)) return;
+    e.preventDefault(); // stop the page from scrolling
+    if (!e.repeat) press();
+  };
   host.addEventListener('pointerdown', onPointer);
-  host.addEventListener('keydown', onKey);
+  window.addEventListener('keydown', onKey);
   const ro = new ResizeObserver(resize);
   ro.observe(host);
   resize();
@@ -344,6 +358,6 @@ export function mountGame(host: HTMLElement): () => void {
     stop(); io.disconnect(); ro.disconnect();
     document.removeEventListener('visibilitychange', onVis);
     host.removeEventListener('pointerdown', onPointer);
-    host.removeEventListener('keydown', onKey);
+    window.removeEventListener('keydown', onKey);
   };
 }
