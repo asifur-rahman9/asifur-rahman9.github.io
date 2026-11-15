@@ -1,0 +1,22 @@
+# Copy into each project repo as .github/workflows/notify-site.yml.
+# On every push to main it asks asifur-rahman9.github.io to rebuild, so the
+# portfolio shows the new commit within a couple of minutes.
+# Needs a repo secret SITE_DISPATCH_TOKEN: a fine-grained personal access token
+# scoped to asifur-rahman9/asifur-rahman9.github.io with "Contents: Read and write".
+name: Notify portfolio site
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger site rebuild
+        env:
+          GH_TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+        run: |
+          gh api repos/asifur-rahman9/asifur-rahman9.github.io/dispatches \
+            -f event_type=project-pushed \
+            -f "client_payload[repo]=${{ github.repository }}"

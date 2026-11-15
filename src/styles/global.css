@@ -76,6 +76,9 @@ nav a:hover{color:var(--ink);background:var(--panel)}
 .projects{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:24px;align-items:start}
 .graph{position:relative;display:flex;flex-direction:column;gap:6px;font-family:var(--mono)}
 .graph .gl{padding-bottom:8px;font-size:13px}
+.sync{display:inline-flex;align-items:center;gap:8px;margin:-4px 0 8px;font-size:12px;color:var(--muted)}
+.sync i{width:7px;height:7px;border-radius:50%;background:#53627C}
+.sync.live i{background:var(--ok);animation:pulse 2s infinite}
 .graph .rail{position:absolute;left:14px;top:44px;bottom:18px;width:2px;background:var(--line2)}
 .commits{display:flex;flex-direction:column;gap:6px}
 .commit{position:relative;text-align:left;display:flex;gap:12px;align-items:flex-start;padding:14px 16px 14px 0;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--text);font-family:var(--mono)}
@@ -108,6 +111,14 @@ nav a:hover{color:var(--ink);background:var(--panel)}
 .part b{color:var(--ink);font-weight:600}
 .tags{display:flex;flex-wrap:wrap;gap:8px}
 .tag{padding:4px 10px;background:var(--panel2);border:1px solid var(--line2);border-radius:6px;font-family:var(--mono);font-size:12px;color:#C9D1DC}
+.recent{display:flex;flex-direction:column;gap:8px;padding-top:4px;border-top:1px solid var(--line)}
+.recent-h{padding-top:12px;font-size:13px;font-weight:600;color:var(--ink)}
+.recent ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.recent li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:baseline;font-size:14px}
+.recent li a{font-size:12.5px;text-decoration:none}
+.recent li a:hover{text-decoration:underline}
+.recent .msg{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#C9D1DC}
+.recent time{font-size:12px;color:var(--muted);white-space:nowrap}
 .repo{align-self:flex-start;font-weight:600;text-decoration:none}
 .repo:hover{text-decoration:underline}
 

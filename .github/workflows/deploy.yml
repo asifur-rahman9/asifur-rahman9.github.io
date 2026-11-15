@@ -5,6 +5,12 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # a project repo pushed: rebuild so its new commits are baked into the page
+  repository_dispatch:
+    types: [project-pushed]
+  # safety net in case a dispatch is missed
+  schedule:
+    - cron: '17 */6 * * *'
 
 permissions:
   contents: read
@@ -27,13 +33,15 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
   deploy:
     # only deploy from main; PRs just run tests + build
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

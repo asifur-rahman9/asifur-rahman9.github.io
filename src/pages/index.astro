@@ -6,6 +6,9 @@ import ProjectExplorer from '../components/ProjectExplorer.tsx';
 import Toolbox from '../components/Toolbox.tsx';
 import DogGame from '../components/DogGame.tsx';
 import { site, projects, minorProjects, toolGroups, usedIn } from '../data/site';
+import { fetchActivity, repoSlug } from '../lib/github';
+// Commit data baked in at build time; CI passes GITHUB_TOKEN for a higher rate limit.
+const activity = await fetchActivity(projects.map((p) => repoSlug(p.repo)), process.env.GITHUB_TOKEN);
 const year = new Date().getFullYear();
 ---
 <Base>
@@ -40,7 +43,7 @@ const year = new Date().getFullYear();
         <h2>Projects</h2>
         <p class="sub">My work as a commit history. Pick a commit to read it.</p>
       </div>
-      <ProjectExplorer client:visible projects={projects} minor={minorProjects} github={site.github} />
+      <ProjectExplorer client:visible projects={projects} minor={minorProjects} github={site.github} initial={activity} />
     </div></section>
 
     <section id="toolbox"><div class="wrap sec toolbox">
