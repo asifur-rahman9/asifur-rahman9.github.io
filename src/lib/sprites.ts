@@ -5,7 +5,7 @@ export const PAL: Record<string, string> = {
   H: '#1A1416', h: '#3A2E2E', // hair
   S: '#D8A27A', s: '#B9825C', // skin, skin shadow
   E: '#1B1B1F', R: '#9C5B45', // eye, mouth
-  B: '#4F6BA8', b: '#3B5288', L: '#6A86C2', D: '#E6E9EF', // hoodie, shadow, light, drawstring
+  B: '#5A3D2B', b: '#452E20', L: '#73513A', D: '#E6E9EF', // dark brown hoodie, shadow, light, drawstring
   P: '#4A6A9A', p: '#34507A', // jeans
   K: '#ECEEF2', k: '#9AA1AB', // sneakers
   M: '#C9CED6', m: '#8E959F', // MacBook aluminium
@@ -41,9 +41,9 @@ export function toRects(rows: string[], overlay: Pix[] = []): Rect[] {
 
 // ---------- walking (14 x 29), facing right, MacBook carried at the hip ----------
 const WALK_TOP = [
-  '....HHHHH.....',
-  '...HHhHHHH....',
-  '..HHHHHHHHH...',
+  '...H.HH.H.....',
+  '...HHhHHhH....',
+  '..HhHHhHHHH...',
   '..HHHHHHSSS...',
   '..HHHSSSSES...',
   '..HHsSSSSSSS..',
@@ -92,7 +92,7 @@ export const WALK_SIZE = { w: 14, h: 29 };
 // ---------- seated at a desk (32 x 26): armchair, developer, table, MacBook, mug ----------
 Object.assign(PAL, {
   A: '#AFC0D2', a: '#8A9BB0', O: '#5A3426', // armchair cushion, shade, wooden legs
-  r: '#C46A5E', // smile
+  r: '#B0574D', // mouth
   N: '#8E5A44', n: '#6E4234', V: '#5E6B7C', // table top, edge, pedestal
 });
 const W32 = 30, H26 = 26; // composite width/height in sprite pixels
@@ -110,16 +110,16 @@ const CHAIR = [
 // three-quarter view toward the laptop: small head, no smile, hoodie, jeans, white sneakers
 const PERSON = [
   '',
-  '',
-  '....HHHHHH',
-  '...HHhhHHHH',
-  '...HHHhHHHHH',
-  '...HHHSSSSSH',
-  '...HHsSSESES',
-  '...HHsSSSSSS',
-  '....HSSSSSSSS',
-  '....HSSSSSSS',
-  '.....sSSSSs',
+  '.....H.HH.H',
+  '....HHHHHHHH',
+  '...HHhHHhHHHH',
+  '..HHhHHHhHHhH',
+  '..HHhHHSHSSHH',
+  '..HHHsSSESES',
+  '..hHHsSSSSSS',
+  '...HHSSSSSSSS',
+  '...hHSSSSSrS',
+  '.....sSSSrs',
   '......sSs',
   '...LLBBBBL',
   '...BBBDBDBB',
