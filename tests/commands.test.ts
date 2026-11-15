@@ -5,16 +5,18 @@ import { experience } from '../src/data/site';
 describe('terminal commands', () => {
   it('ignores empty input', () => expect(runCommand('   ')).toBeNull());
   it('is case-insensitive and collapses spaces', () => {
-    expect(runCommand('  WHOAMI ')?.output).toContain('Asif');
+    expect(runCommand('  WHOAMI ')?.output).toContain('Asifur Rahman');
     expect(runCommand('git   log')?.action).toEqual({ type: 'gitlog' });
   });
   it('reports unknown commands', () => expect(runCommand('make coffee')?.output).toMatch(/command not found/));
   it('every command listed in help works', () => {
     for (const c of helpCommands) expect(runCommand(c)?.output).not.toMatch(/command not found/);
   });
-  it('prints every resume bullet in experience', () => {
+  it('summarises experience with dates, details on request', () => {
     const out = runCommand('experience')!.output;
-    for (const j of experience) for (const b of j.bullets) expect(out).toContain(b);
+    for (const j of experience) { expect(out).toContain(j.short); expect(out).toContain(j.company); }
+    for (const j of experience) for (const b of j.bullets) expect(runCommand(`experience ${j.key}`)!.output).toContain(b);
+    expect(runCommand('experience nope')!.output).toMatch(/no role/);
   });
   it('opens projects by short name', () => {
     expect(runCommand('open hammerfall')?.action).toEqual({ type: 'project', id: 'engine' });
@@ -24,6 +26,7 @@ describe('terminal commands', () => {
     expect(runCommand('github')?.action).toEqual({ type: 'open', url: 'https://github.com/asifur-rahman9' });
     expect(runCommand('clear')?.action).toEqual({ type: 'clear' });
     expect(runCommand('coffee')?.action).toEqual({ type: 'sip' });
+    expect(runCommand('resume')?.action).toEqual({ type: 'open', url: '/resume.pdf' });
   });
   it('numbers history', () => expect(runCommand('history', ['help', 'skills'])?.output).toBe('  1  help\n  2  skills'));
   it('completes hidden commands too', () => expect(commandNames()).toContain('coffee'));

@@ -11,7 +11,7 @@ export const site = {
   github: 'https://github.com/asifur-rahman9',
   linkedin: 'https://linkedin.com/in/asifurrahman7',
   // Drop your PDF at public/resume.pdf and set this to '/resume.pdf' to show the button.
-  resume: null as string | null,
+  resume: '/resume.pdf' as string | null,
   status: 'Looking for 2027 internships and new grad roles',
 };
 
@@ -96,9 +96,10 @@ export const minorProjects = [
 ];
 
 // Resume content for the terminal (kept verbatim from the resume PDF).
-export type Job = { title: string; dates: string; org: string; place: string; bullets: string[] };
+export type Job = { key: string; short: string; company: string; title: string; dates: string; org: string; place: string; bullets: string[] };
 export const experience: Job[] = [
   {
+    key: 'bmo', short: 'May–Aug 2026', company: 'BMO Capital Markets',
     title: 'Software Developer Intern', dates: 'May to August 2026',
     org: 'BMO Capital Markets, Platform & Infrastructure Development', place: 'Toronto, Ontario',
     bullets: [
@@ -109,6 +110,7 @@ export const experience: Job[] = [
     ],
   },
   {
+    key: 'devops', short: 'Sep 2025–Apr 2026', company: 'BMO Financial Group',
     title: 'DevOps Engineer Intern', dates: 'September 2025 to April 2026',
     org: 'BMO Financial Group, Corporate Database DevOps', place: 'Toronto, Ontario',
     bullets: [
@@ -119,6 +121,7 @@ export const experience: Job[] = [
     ],
   },
   {
+    key: 'concordia', short: 'Jan–Apr 2025', company: 'Concordia University',
     title: 'Web Developer', dates: 'January to April 2025',
     org: 'Concordia University, Open Educational Resources', place: 'Montreal, Québec',
     bullets: [
@@ -128,6 +131,7 @@ export const experience: Job[] = [
     ],
   },
   {
+    key: 'hexa', short: 'May–Aug 2024', company: 'HEXA',
     title: 'Software Engineer Intern', dates: 'May to August 2024',
     org: 'HEXA, Full-Stack Development', place: 'Waterloo, Ontario',
     bullets: [
