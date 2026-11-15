@@ -2,11 +2,11 @@
 // Grids are converted once into run-length <rect> lists for cheap SVG rendering.
 
 export const PAL: Record<string, string> = {
-  H: '#2A1B12', h: '#4A3222', // hair
+  H: '#1A1416', h: '#3A2E2E', // hair
   S: '#D8A27A', s: '#B9825C', // skin, skin shadow
   E: '#1B1B1F', R: '#9C5B45', // eye, mouth
   B: '#4F6BA8', b: '#3B5288', L: '#6A86C2', D: '#E6E9EF', // hoodie, shadow, light, drawstring
-  P: '#2F3B52', p: '#232D40', // jeans
+  P: '#4A6A9A', p: '#34507A', // jeans
   K: '#ECEEF2', k: '#9AA1AB', // sneakers
   M: '#C9CED6', m: '#8E959F', // MacBook aluminium
   T: '#8B5A2B', // stick
@@ -89,44 +89,99 @@ const LEGS_PASS = [
 export const WALK = [toRects([...WALK_TOP, ...LEGS_APART]), toRects([...WALK_TOP, ...LEGS_PASS])];
 export const WALK_SIZE = { w: 14, h: 29 };
 
-// ---------- sitting cross-legged (21 x 20) with the MacBook open on his lap ----------
-const SIT_BASE = [
-  '.....HHHHH...........',
-  '....HHhHHHH..........',
-  '...HHHHHHHHH.........',
-  '...HHHHHHHSSS........',
-  '...HHHHSSSSES........',
-  '...HHHsSSSSSSS.......',
-  '....HHsSSSSRS........',
-  '.....HsSSSSS.........',
-  '......sSs............',
-  '....BBBBBBBB.......m.',
-  '...BLBBDBDBBB......m.',
-  '...BLBBDBDBBBB....m..',
-  '...BLBBBBBBBBB....m..',
-  '...BLBBBBBBBBB....m..',
-  '...BLBBBBBBBB.....m..',
-  '..bBBBBBBBBMMMMMMMm..',
-  '.PPPPPPPPPPPPPPPPPP..',
-  'PPPPpppppppPPPPPPPP..',
-  'KKKPPPPPPPPPPPPKKKK..',
-  'kkk............kkkk..',
-];
-const ARM_TYPE_A: Pix[] = [[10, 11, 'L'], [11, 11, 'L'], [11, 12, 'L'], [12, 12, 'L'], [12, 13, 'L'], [13, 13, 'L'], [14, 14, 'S'], [15, 14, 'S'], [17, 14, 'S']];
-const ARM_TYPE_B: Pix[] = [[10, 11, 'L'], [11, 11, 'L'], [11, 12, 'L'], [12, 12, 'L'], [12, 13, 'L'], [13, 13, 'L'], [14, 13, 'S'], [16, 14, 'S'], [17, 14, 'S']];
-const ARM_WINDUP: Pix[] = [[4, 9, 'L'], [3, 8, 'L'], [4, 8, 'L'], [3, 7, 'L'], [2, 6, 'L'], [3, 6, 'L'], [2, 5, 'L'], [1, 4, 'S'], [2, 4, 'S'], [0, 3, 'T'], [-1, 2, 'T'], [-2, 1, 'T'], [15, 14, 'S']];
-const ARM_RELEASE: Pix[] = [[11, 10, 'L'], [12, 9, 'L'], [12, 10, 'L'], [13, 8, 'L'], [13, 9, 'L'], [14, 7, 'L'], [14, 8, 'L'], [15, 6, 'L'], [16, 5, 'S'], [16, 6, 'S'], [15, 14, 'S']];
-const ARM_SIP: Pix[] = [[10, 10, 'L'], [11, 10, 'L'], [11, 9, 'L'], [12, 9, 'L'], [12, 8, 'S'],
-  [12, 5, 'W'], [13, 5, 'W'], [12, 6, 'W'], [13, 6, 'C'], [12, 7, 'W'], [13, 7, 'W'], [14, 6, 'W'], [15, 14, 'S']];
-const BLINK: Pix[] = [[11, 4, 's']];
+// ---------- seated at a desk (32 x 26): armchair, developer, table, MacBook, mug ----------
+Object.assign(PAL, {
+  A: '#AFC0D2', a: '#8A9BB0', O: '#5A3426', // armchair cushion, shade, wooden legs
+  r: '#C46A5E', // smile
+  N: '#8E5A44', n: '#6E4234', V: '#5E6B7C', // table top, edge, pedestal
+});
+const W32 = 32, H26 = 26;
+const blank = () => Array.from({ length: H26 }, () => Array<string>(W32).fill('.'));
+const paint = (g: string[][], rows: string[], dx = 0, dy = 0) =>
+  rows.forEach((row, y) => row.split('').forEach((ch, x) => { if (ch !== '.' && g[y + dy]) g[y + dy][x + dx] = ch; }));
 
-export const SIT_SIZE = { w: 21, h: 20 };
+const CHAIR = [
+  ...Array(9).fill(''),
+  '', '',
+  'AAa', 'AAa', 'AAa', 'AAa', 'AAa', 'AAa', 'AAa', 'AAa', 'AAa',
+  'AAAAAAAAAAAAAA',
+  'aaaaaaaaaaaaaa',
+  '.O..........O.', '.O..........O.', '.O..........O.', '.O..........O.',
+];
+// front-facing face (no beard), hoodie with drawstrings, jeans, white sneakers
+const PERSON = [
+  '......HHHHHH.H',
+  '.....HHhhhHHHH',
+  '....HHHhhHHHHH',
+  '....HHHHHHHHHH',
+  '....HSSSSSSSSH',
+  '...sShhSSShhSs',
+  '...sSSESSSSESs',
+  '....SSSSSSSSS',
+  '....SSSSsSSSS',
+  '....SSrSSSrSS',
+  '.....sSrrrSs',
+  '......sSSSs',
+  '...LLBBBBBBLL',
+  '..BBBBBDBDBBBB',
+  '..BBBBBDBDBBBB',
+  '..BBBBBBBBBBBB',
+  '..BBBBbbbbBBBB',
+  '..bbbbbbbbbbbb',
+  '..PPPPPPPPPPPPPPPP',
+  '..ppPPPPPPPPPPPPPP',
+  '..............PPPP',
+  '..............PPPP',
+  '..............PPPP',
+  '..............pPPp',
+  '..............KKKKK',
+  '..............kkkkk',
+];
+const TABLE = [
+  ...Array(17).fill(''),
+  'NNNNNNNNNNNNNNN',
+  '.nnnnnnnnnnnnn.',
+  '.......VV', '.......VV', '.......VV', '.......VV', '.......VV', '.......VV',
+  '....VVVVVVVV',
+];
+const DESK_MUG = [...Array(13).fill(''), '.WCW', '.WWWW', '.WWWW', '.www'];
+const LAPTOP = [
+  ...Array(10).fill(''),
+  '........m', '........m', '.......m', '.......m', '.......m', '.......m',
+  'MMMMMMMm',
+];
+
+function scene(withPerson: boolean): string[] {
+  const g = blank();
+  paint(g, CHAIR);
+  if (withPerson) paint(g, PERSON);
+  paint(g, TABLE, 17);
+  paint(g, DESK_MUG, 27);
+  if (withPerson) paint(g, LAPTOP, 19);
+  return g.map((r) => r.join(''));
+}
+
+const SLEEVE_TYPE: Pix[] = [[14, 13, 'L'], [15, 14, 'L'], [16, 14, 'L'], [17, 15, 'L'], [18, 15, 'L'], [19, 15, 'L']];
+const ARM_TYPE_A: Pix[] = [...SLEEVE_TYPE, [20, 15, 'S'], [22, 15, 'S']];
+const ARM_TYPE_B: Pix[] = [...SLEEVE_TYPE, [21, 15, 'S'], [23, 14, 'S']];
+const ARM_WINDUP: Pix[] = [[14, 12, 'L'], [15, 11, 'L'], [15, 10, 'L'], [16, 9, 'L'], [16, 8, 'S'], [15, 7, 'T'], [14, 6, 'T'], [13, 5, 'T'], [12, 4, 'T']];
+const ARM_RELEASE: Pix[] = [[14, 13, 'L'], [15, 12, 'L'], [16, 11, 'L'], [17, 10, 'L'], [18, 9, 'L'], [19, 8, 'S']];
+// sip: mug lifted from the table to his mouth
+const ARM_SIP: Pix[] = [[14, 13, 'L'], [14, 12, 'L'], [13, 11, 'L'], [12, 10, 'S'], [9, 8, 'W'], [10, 8, 'W'], [11, 8, 'W'], [9, 9, 'W'], [10, 9, 'W'], [11, 9, 'W'], [9, 10, 'w'], [10, 10, 'w'], [11, 10, 'w'],
+  ...[28, 29, 30, 31].flatMap((x) => [13, 14, 15, 16].map((y) => [x, y, '.'] as Pix))];
+const BLINK: Pix[] = [[6, 6, 's'], [11, 6, 's']];
+
+export const SEAT_SIZE = { w: W32, h: H26 };
+/** where the stick leaves his hand on release, in sprite pixels */
+export const RELEASE_HAND = { x: 19, y: 8 };
+export const FURNITURE = toRects(scene(false));
 export type SitPose = 'typeA' | 'typeB' | 'windup' | 'release' | 'sip';
 const ARMS: Record<SitPose, Pix[]> = { typeA: ARM_TYPE_A, typeB: ARM_TYPE_B, windup: ARM_WINDUP, release: ARM_RELEASE, sip: ARM_SIP };
+const SEATED = scene(true);
 const cache = new Map<string, Rect[]>();
 export function sitRects(pose: SitPose, blink: boolean): Rect[] {
   const key = pose + blink;
-  if (!cache.has(key)) cache.set(key, toRects(SIT_BASE, [...ARMS[pose], ...(blink ? BLINK : [])]));
+  if (!cache.has(key)) cache.set(key, toRects(SEATED, [...ARMS[pose], ...(blink ? BLINK : [])]));
   return cache.get(key)!;
 }
 

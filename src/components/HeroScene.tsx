@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { DUCK_SIZE, MUG, SIT_SIZE, WALK, WALK_SIZE, duckRects, sitRects, type DuckFrame, type Rect, type SitPose } from '../lib/sprites';
+import { DUCK_SIZE, FURNITURE, RELEASE_HAND, SEAT_SIZE, WALK, WALK_SIZE, duckRects, sitRects, type DuckFrame, type Rect, type SitPose } from '../lib/sprites';
 
 /*
  * Pixel scene along the bottom of the hero.
- * A developer walks in with a MacBook, sits down with a coffee and codes. A white call duck
+ * A developer walks in with a MacBook, sits down at his desk (armchair, table, coffee) and codes. A white call duck
  * wakes up, waddles over, and he keeps tossing a stick that the duck flap-runs after and
  * brings back in its beak. Click the duck (or run `pet` in the terminal) to pet it.
  * One requestAnimationFrame loop drives a small state machine; reduced motion shows the end state.
@@ -41,8 +41,9 @@ export default function HeroScene() {
   // Keep the scene inside the page's content column (.wrap: max 1200px, padding clamp(20px, 5vw, 64px)).
   const inset = () => { const w = s.current.w; return Math.max(0, (w - 1200) / 2) + Math.min(64, Math.max(20, w * 0.05)); };
   const right = () => s.current.w - inset();
-  const home = () => inset() + 8;
-  const rest = () => home() + SIT_SIZE.w * PX + 18;
+  const home = () => inset() + 8; // left edge of the chair + desk
+  const seatX = () => home() + 2 * PX; // where he stops walking, in front of the chair
+  const rest = () => home() + SEAT_SIZE.w * PX + 14; // duck waits just past the table
 
   const quack = (text?: string) => {
     const st = s.current;
@@ -103,8 +104,8 @@ export default function HeroScene() {
     // the developer
     switch (st.guyMode) {
       case 'walk':
-        st.guyX += Math.max(GUY_SPEED, (home() + 70) / 4.5) * dt; // arrive in ~4.5s on any width
-        if (st.guyX >= home()) { st.guyX = home(); st.guyMode = 'settle'; st.guyT = t; }
+        st.guyX += Math.max(GUY_SPEED, (seatX() + 70) / 4.5) * dt; // arrive in ~4.5s on any width
+        if (st.guyX >= seatX()) { st.guyX = seatX(); st.guyMode = 'settle'; st.guyT = t; }
         break;
       case 'settle':
         if (t - st.guyT > 0.7) { st.guyMode = 'code'; st.wakeAt = t + 0.6; }
@@ -113,7 +114,7 @@ export default function HeroScene() {
         if (t - st.guyT > 0.32) {
           st.guyMode = 'release'; st.guyT = t;
           const x1 = rand(Math.max(rest() + 160, st.w * 0.45), right() - 40);
-          st.flight = { x0: home() + 16 * PX, x1, t0: t, dur: 0.55 + (x1 - home()) / 950 };
+          st.flight = { x0: home() + RELEASE_HAND.x * PX, x1, t0: t, dur: 0.55 + (x1 - home()) / 950 };
           setMode('wait'); st.until = t + 0.2;
         }
         break;
@@ -189,12 +190,12 @@ export default function HeroScene() {
     : st.guyMode === 'settle' ? 'typeA' : (Math.floor(t * 7) % 2 ? 'typeA' : 'typeB');
   const blink = t % 3.7 < 0.14;
   const walkFrame = Math.floor(t / 0.2) % 2;
-  const headBob = st.guyMode === 'code' && Math.floor(t / 0.9) % 4 === 0 ? 1 : 0;
 
   let flying: { x: number; y: number; r: number } | null = null;
   if (st.flight && t >= st.flight.t0) {
     const p = Math.min(1, (t - st.flight.t0) / st.flight.dur);
-    flying = { x: st.flight.x0 + (st.flight.x1 - st.flight.x0) * p, y: 70 + 4 * ARC * p * (1 - p) - (70 - FLOOR) * p, r: p * 720 };
+    const y0 = FLOOR + (SEAT_SIZE.h - RELEASE_HAND.y) * PX; // leaves his raised hand
+    flying = { x: st.flight.x0 + (st.flight.x1 - st.flight.x0) * p, y: y0 + 4 * ARC * p * (1 - p) - (y0 - FLOOR) * p, r: p * 720 };
   }
   const glyphKey = Math.floor(t / 1.3);
 
@@ -202,23 +203,24 @@ export default function HeroScene() {
     <div className="scene" ref={box}>
       <div className="floor" aria-hidden="true" />
 
-      {sitting && !sipping && (
-        <span className="mug" style={{ left: st.guyX - 34 }} aria-hidden="true">
-          <i className="steam" /><i className="steam s2" />
-          <Sprite rects={MUG} w={7} h={5} />
-        </span>
-      )}
-
-      <div className="guy" style={{ left: st.guyX, transform: !sitting && walkFrame ? 'translateY(-4px)' : headBob ? 'translateY(1px)' : undefined }} aria-hidden="true">
+      {/* desk: chair, table and mug are always there; once he sits, the seated sprite includes them */}
+      <div className="desk" style={{ left: home() }} aria-hidden="true">
         {sitting ? (
-          <Sprite rects={sitRects(pose, blink)} w={SIT_SIZE.w} h={SIT_SIZE.h}>
-            <rect className={`glow ${st.guyMode === 'settle' ? '' : 'on'}`} x="16" y="9" width="2" height="6" fill="#8AB4FF" />
+          <Sprite rects={sitRects(pose, blink)} w={SEAT_SIZE.w} h={SEAT_SIZE.h}>
+            <rect className={`glow ${st.guyMode === 'settle' ? '' : 'on'}`} x="25" y="11" width="1" height="5" fill="#8AB4FF" />
           </Sprite>
         ) : (
-          <Sprite rects={WALK[walkFrame]} w={WALK_SIZE.w} h={WALK_SIZE.h} />
+          <Sprite rects={FURNITURE} w={SEAT_SIZE.w} h={SEAT_SIZE.h} />
         )}
-        {st.guyMode === 'code' && !sipping && <span key={glyphKey} className="glyph">{GLYPHS[glyphKey % GLYPHS.length]}</span>}
+        {!sipping && <span className="steam-wrap" style={{ left: 28 * PX, top: 13 * PX - 4 }}><i className="steam" /><i className="steam s2" /></span>}
+        {st.guyMode === 'code' && !sipping && <span key={glyphKey} className="glyph" style={{ left: 21 * PX, top: 6 * PX }}>{GLYPHS[glyphKey % GLYPHS.length]}</span>}
       </div>
+
+      {!sitting && (
+        <div className="guy" style={{ left: st.guyX, transform: walkFrame ? 'translateY(-4px)' : undefined }} aria-hidden="true">
+          <Sprite rects={WALK[walkFrame]} w={WALK_SIZE.w} h={WALK_SIZE.h} />
+        </div>
+      )}
 
       {flying && <span className="stick" style={{ left: flying.x, bottom: flying.y, transform: `rotate(${flying.r}deg)` }} />}
       {st.stickGround !== null && !duck.stick && <span className="stick" style={{ left: st.stickGround, bottom: FLOOR }} />}
