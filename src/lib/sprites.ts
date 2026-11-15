@@ -132,3 +132,56 @@ export function sitRects(pose: SitPose, blink: boolean): Rect[] {
 
 // ---------- coffee mug (7 x 5) ----------
 export const MUG = toRects(['.WWWW..', '.WCCWWW', '.WWWW.W', '.WWWwWW', '..www..']);
+
+// ---------- call duck (14 x 14), facing right ----------
+// White feathers with soft grey shading, orange beak and feet, pink cheek.
+Object.assign(PAL, {
+  U: '#FAFBFD', u: '#D6DDE8', v: '#AEB8C7', // feathers, shade, belly shade
+  Y: '#F7A928', y: '#E0801A', Q: '#FB8C3C', // beak, beak shade, feet
+  X: '#15171C', Z: '#F6A5C0', // eye, cheek
+});
+
+const DUCK_BODY = [
+  '.......UUUU...',
+  '......UUUUUU..',
+  '......UUUUXU..',
+  '......UUUUUUYY',
+  '......uUUZUUy.',
+  '.......uUUUU..',
+  '.U....UUUUU...',
+  'UUUUUUUUUUUU..',
+  '.UUuuuuuvUUU..',
+  '.UUUuuuvUUUU..',
+  '..uUUUUUUUUu..',
+  '...vvvvvvvv...',
+];
+const FEET: Record<'stand' | 'stepA' | 'stepB' | 'none', string[]> = {
+  stand: ['.....Q...Q....', '....QQ..QQ....'],
+  stepA: ['....Q.....Q...', '...QQ.....QQ..'],
+  stepB: ['.....Q..Q.....', '....QQ.QQ.....'],
+  none: ['..............', '..............'],
+};
+// wing raised above the back (flap frame); the folded wing is drawn into the body
+const WING_UP: Pix[] = [
+  [4, 3, 'U'], [5, 3, 'U'], [3, 4, 'U'], [4, 4, 'U'], [5, 4, 'u'], [3, 5, 'U'], [4, 5, 'U'], [5, 5, 'u'], [4, 6, 'U'], [5, 6, 'U'],
+  [3, 8, 'U'], [4, 8, 'U'], [5, 8, 'U'], [6, 8, 'U'], [7, 8, 'U'], [8, 8, 'U'], [4, 9, 'U'], [5, 9, 'U'], [6, 9, 'U'], [7, 9, 'U'],
+];
+const EYES = {
+  open: [] as Pix[],
+  happy: [[9, 3, 'X'], [11, 3, 'X'], [10, 2, 'X']] as Pix[], // ^ shape
+  sleep: [[10, 2, 'v'], [9, 2, 'v']] as Pix[],
+};
+const STICK_IN_BEAK: Pix[] = [9, 10, 11, 12, 13, 14, 15, 16].map((x) => [x, 4, 'T'] as Pix);
+
+export type DuckFrame = { feet: keyof typeof FEET; wing: 'folded' | 'up'; eyes: keyof typeof EYES; stick: boolean };
+export const DUCK_SIZE = { w: 14, h: 14 };
+const duckCache = new Map<string, Rect[]>();
+export function duckRects(f: DuckFrame): Rect[] {
+  const key = `${f.feet}|${f.wing}|${f.eyes}|${f.stick}`;
+  if (!duckCache.has(key)) {
+    duckCache.set(key, toRects([...DUCK_BODY, ...FEET[f.feet]], [
+      ...(f.wing === 'up' ? WING_UP : []), ...EYES[f.eyes], ...(f.stick ? STICK_IN_BEAK : []),
+    ]));
+  }
+  return duckCache.get(key)!;
+}

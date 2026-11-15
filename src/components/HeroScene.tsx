@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { MUG, SIT_SIZE, WALK, WALK_SIZE, sitRects, type Rect, type SitPose } from '../lib/sprites';
+import { DUCK_SIZE, MUG, SIT_SIZE, WALK, WALK_SIZE, duckRects, sitRects, type DuckFrame, type Rect, type SitPose } from '../lib/sprites';
 
 /*
  * Pixel scene along the bottom of the hero.
- * A developer walks in with a MacBook, sits down with a coffee and codes. The dog wakes up,
- * runs over, and he keeps throwing a stick that the dog fetches and brings back.
- * Click the dog (or run `pet` in the terminal) to pet it; it pauses, hearts, then carries on.
+ * A developer walks in with a MacBook, sits down with a coffee and codes. A white call duck
+ * wakes up, waddles over, and he keeps tossing a stick that the duck flap-runs after and
+ * brings back in its beak. Click the duck (or run `pet` in the terminal) to pet it.
  * One requestAnimationFrame loop drives a small state machine; reduced motion shows the end state.
  */
 
@@ -18,71 +18,60 @@ const Sprite = ({ rects, w, h, children }: { rects: Rect[]; w: number; h: number
   </svg>
 );
 
-// dog palette + parts (16 x 12 grid)
-const FUR = '#B07A45', FUR_D = '#8F5F33', BELLY = '#EAD7B7', EAR = '#6B4423', STICK = '#8B5A2B';
-type R = [number, number, number, number, string];
-const r = (list: R[]) => list.map(([x, y, w, h, f], i) => <rect key={i} x={x} y={y} width={w} height={h} fill={f} />);
-const LEGS_A: R[] = [[3, 9, 1, 3, FUR], [5, 9, 1, 3, FUR], [8, 9, 1, 3, FUR], [10, 9, 1, 3, FUR]];
-const LEGS_B: R[] = [[2, 9, 1, 3, FUR], [4, 9, 1, 2, FUR], [9, 9, 1, 2, FUR], [11, 9, 1, 3, FUR]];
-const LEGS_SIT: R[] = [[3, 9, 2, 3, FUR], [8, 10, 1, 2, FUR], [10, 10, 1, 2, FUR]];
-
-function DogSprite({ legs, asleep, carrying, wag }: { legs: 'a' | 'b' | 'sit'; asleep: boolean; carrying: boolean; wag: boolean }) {
-  return (
-    <svg width="64" height="48" viewBox="0 0 16 12" shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
-      <g className={wag ? 'tail wag' : 'tail'}>{r([[0, 1, 1, 2, FUR], [1, 2, 1, 3, FUR]])}</g>
-      {r([[2, 5, 9, 4, FUR], [4, 5, 4, 1, FUR_D], [4, 8, 5, 1, BELLY], ...(legs === 'b' ? LEGS_B : legs === 'sit' ? LEGS_SIT : LEGS_A),
-        [9, 3, 1, 3, FUR], [10, 1, 5, 4, FUR], [10, 1, 2, 3, EAR], [14, 3, 2, 2, BELLY], [15, 3, 1, 1, '#111'],
-        [9, 5, 2, 1, '#8AB4FF'], [14, 4, 1, 1, '#3B2414']])}
-      {asleep
-        ? <rect x="13" y="2" width="2" height="1" fill="#3B2414" />
-        : r([[12, 2, 1, 1, '#0B0F14'], [13, 2, 2, 1, '#0B0F14'], [13, 2, 1, 1, '#5CC8FF']])}
-      {carrying && <rect x="13" y="4" width="6" height="1" fill={STICK} />}
-    </svg>
-  );
-}
-
-type DogMode = 'sleep' | 'toGuy' | 'sit' | 'wait' | 'fetch' | 'pickup' | 'return';
+type DuckMode = 'sleep' | 'toGuy' | 'sit' | 'wait' | 'fetch' | 'pickup' | 'return';
 type GuyMode = 'walk' | 'settle' | 'code' | 'windup' | 'release';
 type Flight = { x0: number; x1: number; t0: number; dur: number };
 
-const DOG_W = 64, GUY_SPEED = 62, DOG_RUN = 260, DOG_CARRY = 200, ARC = 90;
+const DUCK_W = DUCK_SIZE.w * PX, GUY_SPEED = 62, DUCK_RUN = 230, DUCK_CARRY = 170, DUCK_WADDLE = 120, ARC = 90;
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 const GLYPHS = ['{ }', '</>', 'git push', 'fn()', '200 OK', 'npm test', ';'];
+const QUACKS = ['quack!', 'quack', 'qwak!', '!!'];
 
 export default function HeroScene() {
   const box = useRef<HTMLDivElement>(null);
   const s = useRef({
     t: 0, w: 1200,
     guyX: -70, guyMode: 'walk' as GuyMode, guyT: 0,
-    dogX: 900, dogDir: -1, dogMode: 'sleep' as DogMode, wakeAt: Infinity, until: 0,
+    duckX: 900, duckDir: -1, duckMode: 'sleep' as DuckMode, wakeAt: Infinity, until: 0, modeT: 0,
     carrying: false, flight: null as Flight | null, stickGround: null as number | null,
-    petUntil: 0, petKey: 0, sipUntil: 0,
+    petUntil: 0, petKey: 0, sipUntil: 0, quackUntil: 0, quack: 'quack!', hopT: -9,
   });
   const [, render] = useState(0);
 
   // Keep the scene inside the page's content column (.wrap: max 1200px, padding clamp(20px, 5vw, 64px)).
   const inset = () => { const w = s.current.w; return Math.max(0, (w - 1200) / 2) + Math.min(64, Math.max(20, w * 0.05)); };
-  const right = () => s.current.w - inset(); // right edge of the content column
+  const right = () => s.current.w - inset();
   const home = () => inset() + 8;
   const rest = () => home() + SIT_SIZE.w * PX + 18;
 
-  const pet = () => { const st = s.current; st.petUntil = st.t + 1.8; st.petKey++; render((n) => n + 1); };
+  const quack = (text?: string) => {
+    const st = s.current;
+    st.quack = text ?? QUACKS[Math.floor(Math.random() * QUACKS.length)];
+    st.quackUntil = st.t + 0.9;
+  };
+  const pet = () => {
+    const st = s.current;
+    st.petUntil = st.t + 1.8; st.hopT = st.t; st.petKey++;
+    quack('quack!');
+    render((n) => n + 1);
+  };
 
   useEffect(() => {
     const st = s.current;
     const measure = () => { st.w = box.current?.offsetWidth ?? st.w; };
     measure();
-    st.dogX = right() - DOG_W - 8;
+    st.duckX = right() - DUCK_W - 8;
     const ro = new ResizeObserver(measure);
     if (box.current) ro.observe(box.current);
     window.addEventListener('pet-dog', pet); // terminal "pet" command
     const sip = () => { st.sipUntil = st.t + 1.8; render((n) => n + 1); };
     window.addEventListener('sip-coffee', sip); // terminal "coffee" command
+    const cleanup = () => { ro.disconnect(); window.removeEventListener('pet-dog', pet); window.removeEventListener('sip-coffee', sip); };
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      Object.assign(st, { t: 10, guyX: home(), guyMode: 'code', dogX: rest(), dogMode: 'sit', dogDir: -1 });
+      Object.assign(st, { t: 10, guyX: home(), guyMode: 'code', duckX: rest(), duckMode: 'sit', duckDir: -1 });
       render((n) => n + 1);
-      return () => { ro.disconnect(); window.removeEventListener('pet-dog', pet); window.removeEventListener('sip-coffee', sip); };
+      return cleanup;
     }
 
     let raf = 0, last = performance.now();
@@ -95,16 +84,17 @@ export default function HeroScene() {
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener('pet-dog', pet); window.removeEventListener('sip-coffee', sip); };
+    return () => { cancelAnimationFrame(raf); cleanup(); };
   }, []);
 
-  function moveDog(x: number, speed: number, dt: number) {
-    const st = s.current, d = x - st.dogX;
-    if (Math.abs(d) <= speed * dt) { st.dogX = x; return true; }
-    st.dogDir = Math.sign(d);
-    st.dogX += Math.sign(d) * speed * dt;
+  function moveDuck(x: number, speed: number, dt: number) {
+    const st = s.current, d = x - st.duckX;
+    if (Math.abs(d) <= speed * dt) { st.duckX = x; return true; }
+    st.duckDir = Math.sign(d);
+    st.duckX += Math.sign(d) * speed * dt;
     return false;
   }
+  const setMode = (m: DuckMode) => { const st = s.current; st.duckMode = m; st.modeT = st.t; };
 
   function update(dt: number) {
     const st = s.current, t = st.t;
@@ -115,7 +105,7 @@ export default function HeroScene() {
         st.guyX += Math.max(GUY_SPEED, (home() + 70) / 4.5) * dt; // arrive in ~4.5s on any width
         if (st.guyX >= home()) { st.guyX = home(); st.guyMode = 'settle'; st.guyT = t; }
         break;
-      case 'settle': // sits down, opens the laptop, screen glow fades in
+      case 'settle':
         if (t - st.guyT > 0.7) { st.guyMode = 'code'; st.wakeAt = t + 0.6; }
         break;
       case 'windup':
@@ -123,7 +113,7 @@ export default function HeroScene() {
           st.guyMode = 'release'; st.guyT = t;
           const x1 = rand(Math.max(rest() + 160, st.w * 0.45), right() - 40);
           st.flight = { x0: home() + 16 * PX, x1, t0: t, dur: 0.55 + (x1 - home()) / 950 };
-          st.dogMode = 'wait'; st.until = t + 0.2;
+          setMode('wait'); st.until = t + 0.2;
         }
         break;
       case 'release':
@@ -134,50 +124,71 @@ export default function HeroScene() {
 
     if (st.flight && t >= st.flight.t0 + st.flight.dur) { st.stickGround = st.flight.x1; st.flight = null; }
 
-    // the dog (frozen while being petted)
+    // the duck (frozen while being petted)
     if (t < st.petUntil) return;
-    switch (st.dogMode) {
+    switch (st.duckMode) {
       case 'sleep':
-        if (t > st.wakeAt) st.dogMode = 'toGuy';
+        if (t > st.wakeAt) { setMode('toGuy'); quack('!'); st.hopT = t; }
         break;
       case 'toGuy':
       case 'return':
-        if (moveDog(rest(), st.dogMode === 'return' ? DOG_CARRY : DOG_RUN, dt)) {
-          if (st.carrying) { st.carrying = false; st.stickGround = st.dogX - 10; }
-          st.dogDir = -1;
-          st.dogMode = 'sit';
-          st.until = t + rand(2.2, 4);
+        if (moveDuck(rest(), st.duckMode === 'return' ? DUCK_CARRY : DUCK_WADDLE, dt)) {
+          if (st.carrying) { st.carrying = false; st.stickGround = st.duckX - 10; if (Math.random() < 0.6) quack(); }
+          st.duckDir = -1;
+          setMode('sit');
+          st.until = t + rand(2.4, 4.2);
         }
         break;
       case 'sit':
         if (t > st.until && st.guyMode === 'code') { st.guyMode = 'windup'; st.guyT = t; st.stickGround = null; }
         break;
       case 'wait':
-        if (t > st.until) st.dogMode = 'fetch';
+        if (t > st.until) { setMode('fetch'); st.hopT = t; }
         break;
       case 'fetch': {
-        const target = (st.flight?.x1 ?? st.stickGround ?? st.dogX) - 56;
-        if (moveDog(target, DOG_RUN, dt) && st.stickGround !== null) { st.dogMode = 'pickup'; st.until = t + 0.35; }
+        const target = (st.flight?.x1 ?? st.stickGround ?? st.duckX) - (DUCK_W - 6);
+        if (moveDuck(target, DUCK_RUN, dt) && st.stickGround !== null) { setMode('pickup'); st.until = t + 0.45; st.hopT = t; }
         break;
       }
       case 'pickup':
-        if (t > st.until) { st.carrying = true; st.stickGround = null; st.dogMode = 'return'; }
+        if (t > st.until) { st.carrying = true; st.stickGround = null; setMode('return'); }
         break;
     }
   }
 
   const st = s.current, t = st.t;
   const petting = t < st.petUntil;
-  const running = !petting && ['toGuy', 'fetch', 'return'].includes(st.dogMode);
-  const dogLegs = running ? (Math.floor(t / 0.09) % 2 ? 'b' : 'a') : st.dogMode === 'sleep' ? 'a' : 'sit';
 
+  // ---- duck pose and motion ----
+  const m = st.duckMode;
+  const moving = !petting && (m === 'toGuy' || m === 'fetch' || m === 'return');
+  const sinceMode = t - st.modeT;
+  const stepRate = m === 'fetch' ? 11 : 7; // steps per second
+  const phase = Math.sin(t * stepRate * Math.PI);
+  const flapFast = Math.floor(t / 0.08) % 2 === 0;
+  const stretching = m === 'sit' && !petting && (t % 6.5) > 5.9; // wing stretch every few seconds
+  const duck: DuckFrame = {
+    feet: moving ? (phase > 0 ? 'stepA' : 'stepB') : (m === 'sleep' || m === 'sit') && !petting ? 'none' : 'stand',
+    wing: (moving && m === 'fetch' && flapFast) || (petting && Math.floor(t / 0.12) % 2 === 0) || (stretching && flapFast) ? 'up' : 'folded',
+    eyes: m === 'sleep' && !petting ? 'sleep' : petting ? 'happy' : 'open',
+    stick: st.carrying || (m === 'pickup' && sinceMode > 0.2),
+  };
+  const hopAge = t - st.hopT;
+  const hop = hopAge < 0.32 ? Math.sin((hopAge / 0.32) * Math.PI) * 10 : 0;
+  const waddleTilt = moving ? phase * (m === 'fetch' ? 9 : 7) : 0;
+  const bob = moving ? -Math.abs(phase) * 2 : 0;
+  const breathe = m === 'sleep' && !petting ? 1 + Math.sin(t * 2.2) * 0.025 : 1;
+  const settled = (m === 'sit' || m === 'sleep') && !petting ? 4 : 0; // sitting ducks hide their feet and drop a little
+  const duckTransform = `translateY(${bob - hop + settled}px) rotate(${waddleTilt}deg) scaleY(${breathe})`;
+
+  // ---- developer pose ----
   const sitting = st.guyMode !== 'walk';
   const sipping = t < st.sipUntil && (st.guyMode === 'code' || st.guyMode === 'settle');
   const pose: SitPose = sipping ? 'sip' : st.guyMode === 'windup' ? 'windup' : st.guyMode === 'release' ? 'release'
     : st.guyMode === 'settle' ? 'typeA' : (Math.floor(t * 7) % 2 ? 'typeA' : 'typeB');
   const blink = t % 3.7 < 0.14;
   const walkFrame = Math.floor(t / 0.2) % 2;
-  const headBob = st.guyMode === 'code' && Math.floor(t / 0.9) % 4 === 0 ? 1 : 0; // occasional nod to the beat
+  const headBob = st.guyMode === 'code' && Math.floor(t / 0.9) % 4 === 0 ? 1 : 0;
 
   let flying: { x: number; y: number; r: number } | null = null;
   if (st.flight && t >= st.flight.t0) {
@@ -205,25 +216,27 @@ export default function HeroScene() {
         ) : (
           <Sprite rects={WALK[walkFrame]} w={WALK_SIZE.w} h={WALK_SIZE.h} />
         )}
-        {st.guyMode === 'code' && <span key={glyphKey} className="glyph">{GLYPHS[glyphKey % GLYPHS.length]}</span>}
+        {st.guyMode === 'code' && !sipping && <span key={glyphKey} className="glyph">{GLYPHS[glyphKey % GLYPHS.length]}</span>}
       </div>
 
       {flying && <span className="stick" style={{ left: flying.x, bottom: flying.y, transform: `rotate(${flying.r}deg)` }} />}
-      {st.stickGround !== null && <span className="stick" style={{ left: st.stickGround, bottom: FLOOR }} />}
+      {st.stickGround !== null && !duck.stick && <span className="stick" style={{ left: st.stickGround, bottom: FLOOR }} />}
 
-      <button type="button" className="dog-btn" aria-label="Pet the dog" style={{ left: st.dogX }} onClick={pet}>
-        <span className="shadow" />
-        <span className="dog-body" style={{ transform: `scaleX(${st.dogDir})` }}>
-          <DogSprite legs={dogLegs} asleep={st.dogMode === 'sleep' && !petting} carrying={st.carrying}
-            wag={petting || st.dogMode === 'sit' || st.dogMode === 'wait'} />
+      <button type="button" className="duck-btn" aria-label="Pet the duck" style={{ left: st.duckX }} onClick={pet}>
+        <span className="shadow" style={{ transform: `scaleX(${hop ? 0.8 : 1})` }} />
+        <span className="duck-body" style={{ transform: `scaleX(${st.duckDir})` }}>
+          <span className="duck-motion" style={{ transform: duckTransform }}>
+            <Sprite rects={duckRects(duck)} w={DUCK_SIZE.w} h={DUCK_SIZE.h} />
+          </span>
         </span>
-        {petting && [[30, -14, 18, 0], [48, -4, 14, 0.45], [14, -2, 12, 0.9]].map(([l, tp, sz, d], i) => (
+        {t < st.quackUntil && <span className="quack">{st.quack}</span>}
+        {petting && [[22, -14, 16, 0], [40, -6, 12, 0.45], [8, -4, 11, 0.9]].map(([l, tp, sz, d], i) => (
           <span key={`${st.petKey}-${i}`} className="fx heart" style={{ left: l, top: tp, fontSize: sz, animationDelay: `${d}s` }}>♥</span>
         ))}
-        {st.dogMode === 'sleep' && !petting && (
+        {m === 'sleep' && !petting && (
           <>
-            <span className="fx zz" style={{ left: 48, top: -10 }}>z</span>
-            <span className="fx zz" style={{ left: 60, top: -20, fontSize: 10, animationDelay: '1.2s' }}>z</span>
+            <span className="fx zz" style={{ left: 36, top: -6 }}>z</span>
+            <span className="fx zz" style={{ left: 48, top: -16, fontSize: 10, animationDelay: '1.2s' }}>z</span>
           </>
         )}
       </button>

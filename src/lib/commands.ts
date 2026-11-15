@@ -85,7 +85,7 @@ const table: Record<string, (arg: string) => Result> = {
   clear: () => ({ output: '', action: { type: 'clear' } }),
   // hidden extras (not listed in help)
   'sudo hire-asif': () => ({ output: `permission granted. reach out: ${site.email}` }),
-  pet: () => ({ output: 'the dog appreciates it ♥', action: { type: 'pet' } }),
+  pet: () => ({ output: 'the duck appreciates it ♥ quack!', action: { type: 'pet' } }),
   coffee: () => ({ output: 'brewing… ☕ done. he takes a sip.', action: { type: 'sip' } }),
   exit: () => ({ output: "there's no escape. try 'contact' instead" }),
   'rm -rf /': () => ({ output: 'nice try' }),
