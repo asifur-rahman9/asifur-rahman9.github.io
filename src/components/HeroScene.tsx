@@ -1,74 +1,53 @@
 import { useEffect, useRef, useState } from 'react';
+import { MUG, SIT_SIZE, WALK, WALK_SIZE, sitRects, type Rect, type SitPose } from '../lib/sprites';
 
 /*
  * Pixel scene along the bottom of the hero.
- * Story: a guy walks in carrying a MacBook, sits down and codes. The dog wakes up,
- * runs over, and the guy keeps throwing a stick that the dog fetches and brings back.
- * Visitors can click the dog to pet it at any time (it pauses, hearts, then carries on).
- * Everything is driven by one requestAnimationFrame loop over a small state machine.
+ * A developer walks in with a MacBook, sits down with a coffee and codes. The dog wakes up,
+ * runs over, and he keeps throwing a stick that the dog fetches and brings back.
+ * Click the dog (or run `pet` in the terminal) to pet it; it pauses, hearts, then carries on.
+ * One requestAnimationFrame loop drives a small state machine; reduced motion shows the end state.
  */
 
-type Px = [number, number, number, number, string]; // x, y, w, h, fill (in sprite pixels)
-const rects = (list: Px[]) => list.map(([x, y, w, h, f], i) => <rect key={i} x={x} y={y} width={w} height={h} fill={f} />);
+const PX = 4; // screen pixels per sprite pixel
+const FLOOR = 12; // floor strip height
+const Sprite = ({ rects, w, h, children }: { rects: Rect[]; w: number; h: number; children?: React.ReactNode }) => (
+  <svg width={w * PX} height={h * PX} viewBox={`0 0 ${w} ${h}`} shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
+    {children}
+    {rects.map(([x, y, rw, f], i) => <rect key={i} x={x} y={y} width={rw} height={1} fill={f} />)}
+  </svg>
+);
 
-// palette
-const HAIR = '#2B1D14', SKIN = '#D9A47A', HOOD = '#4F6BA8', HOOD_D = '#3E5690', PANTS = '#2A3240',
-  SHOE = '#E5E7EB', MAC = '#C9CED6', MAC_D = '#9AA1AB', GLOW = '#7AA2F7', EYE = '#1A1A1A',
-  FUR = '#B07A45', FUR_D = '#8F5F33', BELLY = '#EAD7B7', EAR = '#6B4423', STICK = '#8B5A2B';
+// dog palette + parts (16 x 12 grid)
+const FUR = '#B07A45', FUR_D = '#8F5F33', BELLY = '#EAD7B7', EAR = '#6B4423', STICK = '#8B5A2B';
+type R = [number, number, number, number, string];
+const r = (list: R[]) => list.map(([x, y, w, h, f], i) => <rect key={i} x={x} y={y} width={w} height={h} fill={f} />);
+const LEGS_A: R[] = [[3, 9, 1, 3, FUR], [5, 9, 1, 3, FUR], [8, 9, 1, 3, FUR], [10, 9, 1, 3, FUR]];
+const LEGS_B: R[] = [[2, 9, 1, 3, FUR], [4, 9, 1, 2, FUR], [9, 9, 1, 2, FUR], [11, 9, 1, 3, FUR]];
+const LEGS_SIT: R[] = [[3, 9, 2, 3, FUR], [8, 10, 1, 2, FUR], [10, 10, 1, 2, FUR]];
 
-const HEAD: Px[] = [[3, 0, 6, 2, HAIR], [3, 2, 6, 4, SKIN], [3, 2, 1, 3, HAIR], [8, 2, 1, 1, HAIR], [7, 3, 1, 1, EYE]];
-
-function GuyWalk({ frame }: { frame: number }) {
-  const legs: Px[] = frame
-    ? [[4, 13, 2, 5, PANTS], [6, 13, 2, 5, PANTS], [4, 18, 3, 1, SHOE], [6, 18, 3, 1, SHOE]]
-    : [[2, 13, 2, 5, PANTS], [8, 13, 2, 5, PANTS], [2, 18, 3, 1, SHOE], [8, 18, 3, 1, SHOE]];
+function DogSprite({ legs, asleep, carrying, wag }: { legs: 'a' | 'b' | 'sit'; asleep: boolean; carrying: boolean; wag: boolean }) {
   return (
-    <svg width="48" height="76" viewBox="0 0 12 19" shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
-      {rects([...HEAD, [2, 6, 8, 7, HOOD], [2, 6, 1, 7, HOOD_D], [6, 7, 2, 4, HOOD_D],
-        [5, 10, 7, 1, MAC], [5, 11, 7, 1, MAC_D], [7, 10, 1, 1, SKIN], ...legs])}
-    </svg>
-  );
-}
-
-function GuySit({ typing, throwing }: { typing: number; throwing: boolean }) {
-  const arms: Px[] = throwing
-    ? [[8, 0, 1, 6, HOOD_D], [8, -1, 1, 1, SKIN], [10, 9, 1, 1, SKIN]]
-    : [[6, 8, 3, 1, HOOD_D], ...(typing ? [[9, 9, 1, 1, SKIN], [11, 9, 1, 1, SKIN]] : [[10, 9, 1, 1, SKIN], [12, 9, 1, 1, SKIN]]) as Px[]];
-  return (
-    <svg width="64" height="56" viewBox="0 0 16 14" shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
-      <rect x="12" y="5" width="1" height="5" fill={GLOW} opacity="0.35" />
-      {rects([...HEAD, [8, 4, 1, 1, GLOW], [2, 6, 7, 5, HOOD], [2, 6, 1, 5, HOOD_D],
-        [1, 11, 12, 2, PANTS], [0, 12, 2, 1, SHOE], [12, 12, 2, 1, SHOE],
-        [8, 10, 6, 1, MAC], [13, 5, 1, 5, MAC], ...arms])}
-    </svg>
-  );
-}
-
-function DogSprite({ run, frame, asleep, carrying, wag }: { run: boolean; frame: number; asleep: boolean; carrying: boolean; wag: boolean }) {
-  const legsA: Px[] = [[3, 9, 1, 3, FUR], [5, 9, 1, 3, FUR], [8, 9, 1, 3, FUR], [10, 9, 1, 3, FUR]];
-  const legsB: Px[] = [[2, 9, 1, 3, FUR], [4, 9, 1, 2, FUR], [9, 9, 1, 2, FUR], [11, 9, 1, 3, FUR]];
-  return (
-    <svg width="80" height="60" viewBox="0 0 16 12" shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
-      <g className={wag ? 'tail wag' : 'tail'}>{rects([[0, 1, 1, 2, FUR], [1, 2, 1, 3, FUR]])}</g>
-      {rects([[2, 5, 9, 4, FUR], [4, 5, 4, 1, FUR_D], [4, 8, 5, 1, BELLY],
-        ...(run && frame ? legsB : legsA),
+    <svg width="64" height="48" viewBox="0 0 16 12" shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
+      <g className={wag ? 'tail wag' : 'tail'}>{r([[0, 1, 1, 2, FUR], [1, 2, 1, 3, FUR]])}</g>
+      {r([[2, 5, 9, 4, FUR], [4, 5, 4, 1, FUR_D], [4, 8, 5, 1, BELLY], ...(legs === 'b' ? LEGS_B : legs === 'sit' ? LEGS_SIT : LEGS_A),
         [9, 3, 1, 3, FUR], [10, 1, 5, 4, FUR], [10, 1, 2, 3, EAR], [14, 3, 2, 2, BELLY], [15, 3, 1, 1, '#111'],
-        [9, 5, 2, 1, GLOW], [14, 4, 1, 1, '#3B2414']])}
+        [9, 5, 2, 1, '#8AB4FF'], [14, 4, 1, 1, '#3B2414']])}
       {asleep
         ? <rect x="13" y="2" width="2" height="1" fill="#3B2414" />
-        : rects([[12, 2, 1, 1, '#0B0F14'], [13, 2, 2, 1, '#0B0F14'], [13, 2, 1, 1, '#5CC8FF']])}
+        : r([[12, 2, 1, 1, '#0B0F14'], [13, 2, 2, 1, '#0B0F14'], [13, 2, 1, 1, '#5CC8FF']])}
       {carrying && <rect x="13" y="4" width="6" height="1" fill={STICK} />}
     </svg>
   );
 }
 
 type DogMode = 'sleep' | 'toGuy' | 'sit' | 'wait' | 'fetch' | 'pickup' | 'return';
-type GuyMode = 'walk' | 'code' | 'throw';
+type GuyMode = 'walk' | 'settle' | 'code' | 'windup' | 'release';
 type Flight = { x0: number; x1: number; t0: number; dur: number };
 
-const DOG_W = 80, GUY_SPEED = 70, DOG_RUN = 270, DOG_CARRY = 210, ARC = 90;
+const DOG_W = 64, GUY_SPEED = 62, DOG_RUN = 260, DOG_CARRY = 200, ARC = 90;
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
-const GLYPHS = ['{ }', '</>', '=>', 'git push', 'fn()', '200 OK', ';'];
+const GLYPHS = ['{ }', '</>', 'git push', 'fn()', '200 OK', 'npm test', ';'];
 
 export default function HeroScene() {
   const box = useRef<HTMLDivElement>(null);
@@ -81,23 +60,22 @@ export default function HeroScene() {
   });
   const [, render] = useState(0);
 
-  const home = () => Math.max(24, Math.min(s.current.w * 0.08, 140));
-  const rest = () => home() + 96;
+  const home = () => Math.max(40, Math.min(s.current.w * 0.08, 150));
+  const rest = () => home() + SIT_SIZE.w * PX + 18;
+
+  const pet = () => { const st = s.current; st.petUntil = st.t + 1.8; st.petKey++; render((n) => n + 1); };
 
   useEffect(() => {
     const st = s.current;
     const measure = () => { st.w = box.current?.offsetWidth ?? st.w; };
     measure();
-    st.dogX = st.w - DOG_W - 40;
+    st.dogX = st.w - DOG_W - 48;
     const ro = new ResizeObserver(measure);
     if (box.current) ro.observe(box.current);
-
-    const pet = () => { st.petUntil = st.t + 1.8; st.petKey++; render((n) => n + 1); };
     window.addEventListener('pet-dog', pet); // terminal "pet" command
 
-    // Reduced motion: skip the story, show the end state.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      Object.assign(st, { guyX: home(), guyMode: 'code', dogX: rest(), dogMode: 'sit', dogDir: -1 });
+      Object.assign(st, { t: 10, guyX: home(), guyMode: 'code', dogX: rest(), dogMode: 'sit', dogDir: -1 });
       render((n) => n + 1);
       return () => { ro.disconnect(); window.removeEventListener('pet-dog', pet); };
     }
@@ -115,7 +93,6 @@ export default function HeroScene() {
     return () => { cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener('pet-dog', pet); };
   }, []);
 
-  // Move the dog toward x; returns true on arrival.
   function moveDog(x: number, speed: number, dt: number) {
     const st = s.current, d = x - st.dogX;
     if (Math.abs(d) <= speed * dt) { st.dogX = x; return true; }
@@ -127,19 +104,32 @@ export default function HeroScene() {
   function update(dt: number) {
     const st = s.current, t = st.t;
 
-    // guy
-    if (st.guyMode === 'walk') {
-      st.guyX += GUY_SPEED * dt;
-      if (st.guyX >= home()) { st.guyX = home(); st.guyMode = 'code'; st.wakeAt = t + 0.8; }
-    } else {
-      st.guyX = home(); // keep pinned on resize
-      if (st.guyMode === 'throw' && t - st.guyT > 0.35) st.guyMode = 'code';
+    // the developer
+    switch (st.guyMode) {
+      case 'walk':
+        st.guyX += GUY_SPEED * dt;
+        if (st.guyX >= home()) { st.guyX = home(); st.guyMode = 'settle'; st.guyT = t; }
+        break;
+      case 'settle': // sits down, opens the laptop, screen glow fades in
+        if (t - st.guyT > 0.7) { st.guyMode = 'code'; st.wakeAt = t + 0.6; }
+        break;
+      case 'windup':
+        if (t - st.guyT > 0.32) {
+          st.guyMode = 'release'; st.guyT = t;
+          const x1 = rand(Math.max(rest() + 160, st.w * 0.45), st.w - 60);
+          st.flight = { x0: home() + 16 * PX, x1, t0: t, dur: 0.55 + (x1 - home()) / 950 };
+          st.dogMode = 'wait'; st.until = t + 0.2;
+        }
+        break;
+      case 'release':
+        if (t - st.guyT > 0.3) st.guyMode = 'code';
+        break;
     }
+    if (st.guyMode !== 'walk') st.guyX = home();
 
-    // stick landing
     if (st.flight && t >= st.flight.t0 + st.flight.dur) { st.stickGround = st.flight.x1; st.flight = null; }
 
-    // dog (frozen while being petted)
+    // the dog (frozen while being petted)
     if (t < st.petUntil) return;
     switch (st.dogMode) {
       case 'sleep':
@@ -148,26 +138,20 @@ export default function HeroScene() {
       case 'toGuy':
       case 'return':
         if (moveDog(rest(), st.dogMode === 'return' ? DOG_CARRY : DOG_RUN, dt)) {
-          if (st.carrying) { st.carrying = false; st.stickGround = st.dogX - 14; }
-          st.dogDir = -1; // face the guy
+          if (st.carrying) { st.carrying = false; st.stickGround = st.dogX - 10; }
+          st.dogDir = -1;
           st.dogMode = 'sit';
           st.until = t + rand(2.2, 4);
         }
         break;
       case 'sit':
-        if (t > st.until && st.guyMode === 'code') {
-          // throw
-          st.guyMode = 'throw'; st.guyT = t; st.stickGround = null;
-          const x1 = rand(Math.max(rest() + 160, st.w * 0.45), st.w - 60);
-          st.flight = { x0: home() + 34, x1, t0: t + 0.15, dur: 0.6 + (x1 - home()) / 900 };
-          st.dogMode = 'wait'; st.until = t + 0.3;
-        }
+        if (t > st.until && st.guyMode === 'code') { st.guyMode = 'windup'; st.guyT = t; st.stickGround = null; }
         break;
       case 'wait':
         if (t > st.until) st.dogMode = 'fetch';
         break;
       case 'fetch': {
-        const target = (st.flight?.x1 ?? st.stickGround ?? st.dogX) - 72;
+        const target = (st.flight?.x1 ?? st.stickGround ?? st.dogX) - 56;
         if (moveDog(target, DOG_RUN, dt) && st.stickGround !== null) { st.dogMode = 'pickup'; st.until = t + 0.35; }
         break;
       }
@@ -180,52 +164,60 @@ export default function HeroScene() {
   const st = s.current, t = st.t;
   const petting = t < st.petUntil;
   const running = !petting && ['toGuy', 'fetch', 'return'].includes(st.dogMode);
-  const runFrame = Math.floor(t / 0.09) % 2;
+  const dogLegs = running ? (Math.floor(t / 0.09) % 2 ? 'b' : 'a') : st.dogMode === 'sleep' ? 'a' : 'sit';
 
-  // stick position while flying (parabola)
+  const sitting = st.guyMode !== 'walk';
+  const pose: SitPose = st.guyMode === 'windup' ? 'windup' : st.guyMode === 'release' ? 'release'
+    : st.guyMode === 'settle' ? 'typeA' : (Math.floor(t * 7) % 2 ? 'typeA' : 'typeB');
+  const blink = t % 3.7 < 0.14;
+  const walkFrame = Math.floor(t / 0.2) % 2;
+  const headBob = st.guyMode === 'code' && Math.floor(t / 0.9) % 4 === 0 ? 1 : 0; // occasional nod to the beat
+
   let flying: { x: number; y: number; r: number } | null = null;
   if (st.flight && t >= st.flight.t0) {
     const p = Math.min(1, (t - st.flight.t0) / st.flight.dur);
-    flying = { x: st.flight.x0 + (st.flight.x1 - st.flight.x0) * p, y: 40 + 4 * ARC * p * (1 - p) - 26 * p, r: p * 720 };
+    flying = { x: st.flight.x0 + (st.flight.x1 - st.flight.x0) * p, y: 70 + 4 * ARC * p * (1 - p) - (70 - FLOOR) * p, r: p * 720 };
   }
   const glyphKey = Math.floor(t / 1.3);
 
   return (
-    <div className="scene" ref={box} aria-hidden="false">
-      {/* the guy */}
-      <div className="guy" style={{ left: st.guyX }}>
-        {st.guyMode === 'walk'
-          ? <GuyWalk frame={Math.floor(t / 0.22) % 2} />
-          : <GuySit typing={Math.floor(t * 6) % 2} throwing={st.guyMode === 'throw'} />}
-        {st.guyMode === 'code' && (
-          <span key={glyphKey} className="glyph mono">{GLYPHS[glyphKey % GLYPHS.length]}</span>
+    <div className="scene" ref={box}>
+      <div className="floor" aria-hidden="true" />
+
+      {sitting && (
+        <span className="mug" style={{ left: st.guyX - 34 }} aria-hidden="true">
+          <i className="steam" /><i className="steam s2" />
+          <Sprite rects={MUG} w={7} h={5} />
+        </span>
+      )}
+
+      <div className="guy" style={{ left: st.guyX, transform: !sitting && walkFrame ? 'translateY(-4px)' : headBob ? 'translateY(1px)' : undefined }} aria-hidden="true">
+        {sitting ? (
+          <Sprite rects={sitRects(pose, blink)} w={SIT_SIZE.w} h={SIT_SIZE.h}>
+            <rect className={`glow ${st.guyMode === 'settle' ? '' : 'on'}`} x="16" y="9" width="2" height="6" fill="#8AB4FF" />
+          </Sprite>
+        ) : (
+          <Sprite rects={WALK[walkFrame]} w={WALK_SIZE.w} h={WALK_SIZE.h} />
         )}
+        {st.guyMode === 'code' && <span key={glyphKey} className="glyph">{GLYPHS[glyphKey % GLYPHS.length]}</span>}
       </div>
 
-      {/* stick: flying or lying on the ground */}
       {flying && <span className="stick" style={{ left: flying.x, bottom: flying.y, transform: `rotate(${flying.r}deg)` }} />}
-      {st.stickGround !== null && <span className="stick" style={{ left: st.stickGround, bottom: 14 }} />}
+      {st.stickGround !== null && <span className="stick" style={{ left: st.stickGround, bottom: FLOOR }} />}
 
-      {/* the dog */}
-      <button
-        type="button"
-        className="dog-btn"
-        aria-label="Pet the dog"
-        style={{ left: st.dogX }}
-        onClick={() => { st.petUntil = st.t + 1.8; st.petKey++; }}
-      >
+      <button type="button" className="dog-btn" aria-label="Pet the dog" style={{ left: st.dogX }} onClick={pet}>
         <span className="shadow" />
         <span className="dog-body" style={{ transform: `scaleX(${st.dogDir})` }}>
-          <DogSprite run={running} frame={runFrame} asleep={st.dogMode === 'sleep' && !petting}
-            carrying={st.carrying} wag={petting || st.dogMode === 'sit' || st.dogMode === 'wait'} />
+          <DogSprite legs={dogLegs} asleep={st.dogMode === 'sleep' && !petting} carrying={st.carrying}
+            wag={petting || st.dogMode === 'sit' || st.dogMode === 'wait'} />
         </span>
-        {petting && [[40, -14, 18, 0], [62, -4, 14, 0.45], [20, -2, 12, 0.9]].map(([l, tp, sz, d], i) => (
-          <span key={`${st.petKey}-${i}`} className="fx acc" style={{ left: l, top: tp, fontSize: sz, animationDelay: `${d}s` }}>♥</span>
+        {petting && [[30, -14, 18, 0], [48, -4, 14, 0.45], [14, -2, 12, 0.9]].map(([l, tp, sz, d], i) => (
+          <span key={`${st.petKey}-${i}`} className="fx heart" style={{ left: l, top: tp, fontSize: sz, animationDelay: `${d}s` }}>♥</span>
         ))}
         {st.dogMode === 'sleep' && !petting && (
           <>
-            <span className="fx mono zz" style={{ left: 60, top: -10 }}>z</span>
-            <span className="fx mono zz" style={{ left: 74, top: -20, fontSize: 12, animationDelay: '1.2s' }}>z</span>
+            <span className="fx zz" style={{ left: 48, top: -10 }}>z</span>
+            <span className="fx zz" style={{ left: 60, top: -20, fontSize: 10, animationDelay: '1.2s' }}>z</span>
           </>
         )}
       </button>

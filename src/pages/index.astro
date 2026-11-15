@@ -12,7 +12,7 @@ const year = new Date().getFullYear();
   <header><div class="wrap">
     <a class="logo" href="#about">Asifur Rahman<span class="cursor" aria-hidden="true"></span></a>
     <nav aria-label="Primary">
-      <a href="#experience">Experience</a><a href="#projects">Projects</a><a class="ext" href="#toolbox">Toolbox</a><a href="#contact">Contact</a>
+      <a class="ext" href="#experience">Experience</a><a href="#projects">Projects</a><a class="ext" href="#toolbox">Toolbox</a><a href="#contact">Contact</a>
       <a class="ext" href={site.github}>GitHub</a><a class="ext" href={site.linkedin}>LinkedIn</a>
     </nav>
   </div></header>
@@ -21,19 +21,14 @@ const year = new Date().getFullYear();
     <section id="about"><div class="wrap hero">
       <div class="hero-text">
         <span class="status"><i aria-hidden="true"></i>{site.status}</span>
-        <h1>I build backend systems and the <em>pipelines that ship them.</em></h1>
-        <p class="lede">Final-year CS (Co-op) at Concordia. Two co-op terms at BMO Capital Markets on platform and infrastructure: Java services, AWS, Jenkins and database automation.</p>
+        <h1>I build backend systems and the pipelines that ship them.</h1>
+        <p class="lede">I'm a final-year CS (Co-op) student at Concordia, graduating in 2027. I spent two co-op terms on BMO Capital Markets' platform and infrastructure teams, working on Java services, AWS, Jenkins and database automation.</p>
         <div class="ctas">
           <a class="btn primary" href="#projects">See my projects</a>
           {site.resume && <a class="btn" href={site.resume}>Resume ↓</a>}
           <a class="btn" href={`mailto:${site.email}`}>Email me</a>
-          <a class="btn" href={site.github}>GitHub ↗</a>
+          <a class="btn" href={site.github}>GitHub</a>
         </div>
-        <dl class="stats">
-          <div><dt>2</dt><dd>co-op terms at BMO</dd></div>
-          <div><dt>3</dt><dd>projects with tests + CI</dd></div>
-          <div><dt>2027</dt><dd>graduating, Concordia</dd></div>
-        </dl>
       </div>
       <Terminal client:load />
     </div>
@@ -42,7 +37,6 @@ const year = new Date().getFullYear();
 
     <section id="experience"><div class="wrap sec">
       <div class="sec-head">
-        <span class="label">~/experience</span>
         <h2>Experience</h2>
       </div>
       <div class="jobs">
@@ -68,7 +62,6 @@ const year = new Date().getFullYear();
 
     <section id="projects"><div class="wrap sec">
       <div class="sec-head">
-        <span class="label">~/projects</span>
         <h2>Projects</h2>
         <p class="sub">My work as a commit history. Pick a commit to read it.</p>
       </div>
@@ -77,7 +70,6 @@ const year = new Date().getFullYear();
 
     <section id="toolbox"><div class="wrap sec">
       <div class="sec-head">
-        <span class="label">~/toolbox</span>
         <h2>Toolbox</h2>
         <p class="sub">Pick a tool to see where I've used it.</p>
       </div>
@@ -86,7 +78,6 @@ const year = new Date().getFullYear();
 
     <section id="break"><div class="wrap sec">
       <div class="sec-head">
-        <span class="label">~/break</span>
         <h2>Need a two-minute break?</h2>
         <p class="sub">Help my dog hop over the cacti and grab snacks. Fish doubles your score, chicken triples it, shrimp gives 5x for five seconds. Click, tap or press Space to jump.</p>
       </div>
@@ -95,7 +86,6 @@ const year = new Date().getFullYear();
 
     <section id="contact">
       <div class="wrap contact">
-        <span class="label">~/contact</span>
         <h2>Get in touch</h2>
         <p>Open to Summer 2027 software engineering internships and new grad roles in Montreal, Toronto or remote in Canada. Email is the fastest way to reach me.</p>
         <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
@@ -107,7 +97,7 @@ const year = new Date().getFullYear();
     </section>
   </main>
   <footer><div class="wrap">
-    <span>© {year} Asifur Rahman · Montreal</span>
-    <a href="https://github.com/asifur-rahman9/asifur-rahman9.github.io">Built with Astro + React · View source</a>
+    <span>© {year} Asifur Rahman, Montreal</span>
+    <a href="https://github.com/asifur-rahman9/asifur-rahman9.github.io">Built with Astro and React. View the source</a>
   </div></footer>
 </Base>

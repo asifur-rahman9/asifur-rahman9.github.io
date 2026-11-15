@@ -2,7 +2,7 @@
 
 export const site = {
   name: 'Asifur Rahman',
-  title: 'Asifur Rahman · Backend & Platform Developer',
+  title: 'Asifur Rahman, backend and platform developer',
   description:
     'Final-year CS (Co-op) at Concordia, two co-op terms at BMO Capital Markets on platform and infrastructure. Open to 2027 SWE internships and new grad roles.',
   url: 'https://asifur-rahman9.github.io',
@@ -11,7 +11,7 @@ export const site = {
   linkedin: 'https://linkedin.com/in/asifurrahman7',
   // Drop your PDF at public/resume.pdf and set this to '/resume.pdf' to show the button.
   resume: null as string | null,
-  status: 'Open to 2027 internships + new grad · MTL / TOR / remote',
+  status: 'Looking for 2027 internships and new grad roles',
 };
 
 export type Role = { title: string; dates: string; points: string[] };
