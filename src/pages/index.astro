@@ -5,14 +5,14 @@ import HeroScene from '../components/HeroScene.tsx';
 import ProjectExplorer from '../components/ProjectExplorer.tsx';
 import Toolbox from '../components/Toolbox.tsx';
 import DogGame from '../components/DogGame.tsx';
-import { site, experience, projects, minorProjects, toolGroups, usedIn } from '../data/site';
+import { site, projects, minorProjects, toolGroups, usedIn } from '../data/site';
 const year = new Date().getFullYear();
 ---
 <Base>
   <header><div class="wrap">
     <a class="logo" href="#about">Asifur Rahman<span class="cursor" aria-hidden="true"></span></a>
     <nav aria-label="Primary">
-      <a class="ext" href="#experience">Experience</a><a href="#projects">Projects</a><a class="ext" href="#toolbox">Toolbox</a><a href="#contact">Contact</a>
+      <a href="#projects">Projects</a><a class="ext" href="#toolbox">Toolbox</a><a href="#contact">Contact</a>
       <a class="ext" href={site.github}>GitHub</a><a class="ext" href={site.linkedin}>LinkedIn</a>
     </nav>
   </div></header>
@@ -35,31 +35,6 @@ const year = new Date().getFullYear();
     <HeroScene client:load />
     </section>
 
-    <section id="experience"><div class="wrap sec">
-      <div class="sec-head">
-        <h2>Experience</h2>
-      </div>
-      <div class="jobs">
-        {experience.map((j) => (
-          <article class="job">
-            <div class="job-org">
-              <h3>{j.org}</h3>
-              <p>{j.team}</p>
-              <div class="tags">{j.stack.map((s) => <span class="tag">{s}</span>)}</div>
-            </div>
-            <div class="roles">
-              {j.roles.map((r) => (
-                <div class="role">
-                  <div class="role-head"><h4>{r.title}</h4>{r.dates && <span>{r.dates}</span>}</div>
-                  <ul>{r.points.map((p) => <li>{p}</li>)}</ul>
-                </div>
-              ))}
-            </div>
-          </article>
-        ))}
-      </div>
-    </div></section>
-
     <section id="projects"><div class="wrap sec">
       <div class="sec-head">
         <h2>Projects</h2>
@@ -68,10 +43,10 @@ const year = new Date().getFullYear();
       <ProjectExplorer client:visible projects={projects} minor={minorProjects} github={site.github} />
     </div></section>
 
-    <section id="toolbox"><div class="wrap sec">
+    <section id="toolbox"><div class="wrap sec toolbox">
       <div class="sec-head">
         <h2>Toolbox</h2>
-        <p class="sub">Pick a tool to see where I've used it.</p>
+        <p class="sub">What I build with. Hover a dependency to see where I've used it.</p>
       </div>
       <Toolbox client:visible groups={toolGroups} usedIn={usedIn} />
     </div></section>
@@ -88,7 +63,10 @@ const year = new Date().getFullYear();
       <div class="wrap contact">
         <h2>Get in touch</h2>
         <p>Open to Summer 2027 software engineering internships and new grad roles in Montreal, Toronto or remote in Canada. Email is the fastest way to reach me.</p>
-        <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
+        <div class="mails">
+          <a class="mail" href={`mailto:${site.email}`}>{site.email}</a>
+          <a class="mail" href={`mailto:${site.schoolEmail}`}>{site.schoolEmail}</a>
+        </div>
         <div class="ctas">
           <a class="btn" href={site.linkedin}>LinkedIn</a><a class="btn" href={site.github}>GitHub</a>
           {site.resume && <a class="btn" href={site.resume}>Resume</a>}

@@ -7,54 +7,13 @@ export const site = {
     'Final-year CS (Co-op) at Concordia, two co-op terms at BMO Capital Markets on platform and infrastructure. Open to 2027 SWE internships and new grad roles.',
   url: 'https://asifur-rahman9.github.io',
   email: 'asifur970@gmail.com',
+  schoolEmail: 'asifur.rahman@mail.concordia.ca',
   github: 'https://github.com/asifur-rahman9',
   linkedin: 'https://linkedin.com/in/asifurrahman7',
   // Drop your PDF at public/resume.pdf and set this to '/resume.pdf' to show the button.
   resume: null as string | null,
   status: 'Looking for 2027 internships and new grad roles',
 };
-
-export type Role = { title: string; dates: string; points: string[] };
-export type Job = { org: string; team: string; roles: Role[]; stack: string[] };
-
-export const experience: Job[] = [
-  {
-    org: 'BMO Capital Markets',
-    team: 'Global Markets technology',
-    roles: [
-      {
-        title: 'Software Developer Intern, Platform & Infrastructure Development',
-        dates: 'May 2026 to Aug 2026',
-        points: [
-          'Built a Java tool comparing market data across Chrono and S3 with parallel downloads and streamed GZip parsing.',
-          'Replaced an unmaintained REST library with an in-house implementation, unblocking platform-wide security upgrades.',
-          'Prototyped dynamic data masking on Aurora PostgreSQL and presented the tradeoffs to the director.',
-        ],
-      },
-      {
-        title: 'Database Analyst Intern, Corporate DB / DevOps',
-        dates: 'Sep 2025 to Apr 2026',
-        points: [
-          'Built an AI schema convention validator on AWS Lambda and Bedrock, wired into the CI/CD pipeline.',
-          'Automated Liquibase database migrations through a Jenkins and Ansible pipeline.',
-        ],
-      },
-    ],
-    stack: ['Java', 'Spring Boot', 'AWS', 'PostgreSQL', 'Jenkins', 'Ansible', 'Liquibase'],
-  },
-  {
-    org: 'HEXA',
-    team: 'Software development internship',
-    roles: [
-      {
-        title: 'Software Developer Intern',
-        dates: '',
-        points: ['Built features across Java/Spring Boot microservices and a React frontend.'],
-      },
-    ],
-    stack: ['Java', 'Spring Boot', 'React', 'Microservices'],
-  },
-];
 
 export type Project = {
   id: string;
@@ -136,11 +95,12 @@ export const minorProjects = [
   { hash: 'dbb5b1d', title: 'Heap from scratch in Java', repo: 'heap-implementation' },
 ];
 
+// Toolbox, shown as a package.json. Keys are the JSON fields.
 export const toolGroups: [string, string[]][] = [
-  ['Languages', ['Java', 'Python', 'TypeScript', 'SQL', 'C++', 'JavaScript', 'Bash', 'C']],
-  ['Backend & frameworks', ['Spring Boot', 'Node.js', 'Express', 'React', 'JUnit', 'Pytest', 'Vitest', 'scikit-learn', 'OpenGL']],
-  ['Cloud & DevOps', ['AWS (Lambda, S3, Bedrock)', 'Jenkins', 'Ansible', 'Docker', 'GitHub Actions', 'Liquibase', 'Maven', 'Linux', 'Git']],
-  ['Data & concepts', ['PostgreSQL (Aurora)', 'SQL Server', 'MongoDB', 'REST APIs', 'Microservices', 'Multithreading', 'CI/CD']],
+  ['languages', ['Java', 'Python', 'TypeScript', 'SQL', 'C++', 'Bash']],
+  ['backend', ['Spring Boot', 'Node.js', 'Express', 'React', 'JUnit', 'Pytest', 'Vitest']],
+  ['cloudDevops', ['AWS', 'Jenkins', 'Ansible', 'Docker', 'GitHub Actions', 'Liquibase', 'Maven', 'Linux']],
+  ['data', ['PostgreSQL', 'MongoDB', 'SQL Server', 'scikit-learn', 'OpenGL']],
 ];
 
 export const usedIn: Record<string, string> = {
@@ -149,27 +109,25 @@ export const usedIn: Record<string, string> = {
   TypeScript: 'Service booking platform',
   SQL: 'BMO, HEXA',
   'C++': 'Hammerfall Grove',
-  JavaScript: 'Service booking platform, this site',
+  Bash: 'BMO, every repo here',
   'Spring Boot': 'BMO, HEXA',
   'Node.js': 'Service booking platform',
   Express: 'Service booking platform',
   React: 'HEXA, Service booking platform, this site',
+  JUnit: 'BMO, HEXA',
   Pytest: 'BIXI Station Monitor',
   Vitest: 'Service booking platform, this site',
-  'scikit-learn': 'BIXI Station Monitor',
-  OpenGL: 'Hammerfall Grove',
-  'AWS (Lambda, S3, Bedrock)': 'BMO',
+  AWS: 'BMO (Lambda, S3, Bedrock, Aurora)',
   Jenkins: 'BMO',
   Ansible: 'BMO',
   Docker: 'BIXI Station Monitor, Service booking platform',
   'GitHub Actions': 'BIXI Station Monitor, Hammerfall Grove, this site',
   Liquibase: 'BMO',
   Maven: 'BMO',
-  Git: 'everything on this page',
-  'PostgreSQL (Aurora)': 'BMO',
+  Linux: 'BMO, everyday',
+  PostgreSQL: 'BMO (Aurora)',
   MongoDB: 'Service booking platform',
-  'REST APIs': 'BMO, HEXA, Service booking platform',
-  Microservices: 'HEXA',
-  Multithreading: 'BMO',
-  'CI/CD': 'BMO, every project here',
+  'SQL Server': 'BMO',
+  'scikit-learn': 'BIXI Station Monitor',
+  OpenGL: 'Hammerfall Grove',
 };

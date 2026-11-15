@@ -21,7 +21,7 @@ const table: Record<string, () => Result> = {
   }),
   experience: () => ({
     output:
-      'BMO Capital Markets   Platform & Infrastructure Development\n  Java, Spring Boot, AWS (Lambda, S3, Bedrock), Aurora PostgreSQL,\n  Jenkins, Ansible, Liquibase, CI/CD\nHEXA                  Java, Spring Boot, React, microservices\n→ scroll to ~/experience for details',
+      'BMO Capital Markets   Platform & Infrastructure Development\n  Java, Spring Boot, AWS (Lambda, S3, Bedrock), Aurora PostgreSQL,\n  Jenkins, Ansible, Liquibase, CI/CD\nHEXA                  Java, Spring Boot, React, microservices',
   }),
   projects: () => ({
     output:
@@ -38,7 +38,7 @@ const table: Record<string, () => Result> = {
     output: '2027 software engineering internships and new grad roles.\nBackend, platform or infra. Montreal, Toronto or remote.',
   }),
   contact: () => ({
-    output: `email     ${site.email}\nlinkedin  ${site.linkedin.replace('https://', '')}\ngithub    ${site.github.replace('https://', '')}`,
+    output: `email     ${site.email}\nschool    ${site.schoolEmail}\nlinkedin  ${site.linkedin.replace('https://', '')}\ngithub    ${site.github.replace('https://', '')}`,
   }),
   email: () => ({ output: `opening mail client… ${site.email}`, action: { type: 'open', url: `mailto:${site.email}` } }),
   github: () => ({ output: 'opening github…', action: { type: 'open', url: site.github } }),
