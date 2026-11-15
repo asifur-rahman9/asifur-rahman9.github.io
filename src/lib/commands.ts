@@ -47,8 +47,7 @@ const table: Record<string, (arg: string) => Result> = {
     const w1 = Math.max(...experience.map((j) => j.short.length)) + 3;
     const w2 = Math.max(...experience.map((j) => j.title.length)) + 3;
     return {
-      output: experience.map((j) => pad(j.short, w1) + pad(j.title, w2) + j.company).join('\n')
-        + `\nType "experience ${experience[0].key}" for details (${experience.map((j) => j.key).join(', ')}).`,
+      output: experience.map((j) => pad(j.short, w1) + pad(j.title, w2) + j.company).join('\n'),
     };
   },
   skills: () => ({ output: skills.map(([k, v]) => bullet(`${k}: ${v}`)).join('\n') }),
