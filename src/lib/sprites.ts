@@ -92,7 +92,7 @@ export const WALK_SIZE = { w: 14, h: 29 };
 // ---------- seated at a desk (32 x 26): armchair, developer, table, MacBook, mug ----------
 Object.assign(PAL, {
   A: '#AFC0D2', a: '#8A9BB0', O: '#5A3426', // armchair cushion, shade, wooden legs
-  r: '#B0574D', // mouth
+  r: '#A8654F', // closed mouth (lip line)
   N: '#8E5A44', n: '#6E4234', V: '#5E6B7C', // table top, edge, pedestal
 });
 const W32 = 30, H26 = 26; // composite width/height in sprite pixels
@@ -118,7 +118,7 @@ const PERSON = [
   '..HHHsSSESES',
   '..hHHsSSSSSS',
   '...HHSSSSSSSS',
-  '...hHSSSSrrS',
+  '...hHSSSSsrS',
   '.....sSSSS',
   '......ss',
   '...LLBBBBL',
