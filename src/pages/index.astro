@@ -3,9 +3,8 @@ import Base from '../layouts/Base.astro';
 import Terminal from '../components/Terminal.tsx';
 import HeroScene from '../components/HeroScene.tsx';
 import ProjectExplorer from '../components/ProjectExplorer.tsx';
-import Toolbox from '../components/Toolbox.tsx';
 import DuckGame from '../components/DuckGame.tsx';
-import { site, projects, minorProjects, toolGroups } from '../data/site';
+import { site, projects, minorProjects } from '../data/site';
 import { fetchActivity, repoSlug } from '../lib/github';
 // Commit data baked in at build time; CI passes GITHUB_TOKEN for a higher rate limit.
 const activity = await fetchActivity(projects.map((p) => repoSlug(p.repo)), process.env.GITHUB_TOKEN);
@@ -15,7 +14,7 @@ const year = new Date().getFullYear();
   <header><div class="wrap">
     <a class="logo" href="#about">Asifur Rahman<span class="cursor" aria-hidden="true"></span></a>
     <nav aria-label="Primary">
-      <a href="#projects">Projects</a><a class="ext" href="#toolbox">Toolbox</a><a href="#contact">Contact</a>
+      <a href="#projects">Projects</a><a href="#contact">Contact</a>
       <a class="ext" href={site.github}>GitHub</a><a class="ext" href={site.linkedin}>LinkedIn</a>
     </nav>
   </div></header>
@@ -35,14 +34,6 @@ const year = new Date().getFullYear();
         <p class="sub">My work as a commit history. Pick a commit to read it.</p>
       </div>
       <ProjectExplorer client:idle projects={projects} minor={minorProjects} github={site.github} initial={activity} />
-    </div></section>
-
-    <section id="toolbox"><div class="wrap sec">
-      <div class="sec-head">
-        <h2>Toolbox</h2>
-        <p class="sub">What I build with, and where I've used it.</p>
-      </div>
-      <Toolbox groups={toolGroups} />
     </div></section>
 
     <section id="break"><div class="wrap sec">

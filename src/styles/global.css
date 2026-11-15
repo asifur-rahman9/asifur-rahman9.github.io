@@ -131,25 +131,6 @@ kbd{padding:1px 6px;border:1px solid var(--line2);border-bottom-width:2px;border
 .repo{align-self:flex-start;font-weight:600;text-decoration:none}
 .repo:hover{text-decoration:underline}
 
-/* toolbox: package.json in an editor */
-.editor{background:var(--panel2);border:1px solid var(--line2);border-radius:14px;overflow:hidden;font-size:13.5px;line-height:1.85}
-.editor-top{display:flex;justify-content:space-between;align-items:center;padding:0 16px 0 0;border-bottom:1px solid var(--line);background:var(--panel);font-size:12px}
-.editor-top .tab{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-right:1px solid var(--line);background:var(--panel2);color:var(--ink);box-shadow:inset 0 2px 0 var(--accent)}
-.editor-top .tab i{width:8px;height:8px;border-radius:2px;background:#F2C55C}
-.code{padding:12px 0 14px}
-.code-cols{display:grid;grid-template-columns:1fr 1fr}
-.code-col + .code-col{border-left:1px dashed var(--line)}
-.ln-row{display:flex;padding-right:16px}
-.ln{flex:0 0 46px;padding-right:14px;text-align:right;color:#3E4C66;user-select:none}
-.dep{border-radius:0;transition:background .12s}
-.dep:hover{background:rgba(138,180,255,.07)}
-.dep:hover .ln{color:var(--accent)}
-.dep-line{min-width:0;padding-left:2ch;overflow:hidden;text-overflow:ellipsis;white-space:pre}
-.key{color:#C4A7E7}
-.pun{color:var(--muted);white-space:pre}
-.str{color:#A6E3A1}
-.cm{padding-left:2ch;color:#5F6E88;font-style:italic;white-space:pre}
-
 /* game */
 .game{--gw:min(1600px,calc(100vw - 48px));position:relative;display:block;width:var(--gw);margin-left:calc((100% - var(--gw)) / 2);height:320px;overflow:hidden;border:1px solid var(--line2);border-radius:16px;background:#BFE6F5;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .game canvas{display:block}
@@ -169,8 +150,6 @@ footer a{color:var(--soft)}
 @media (max-width:900px){
   .hero{grid-template-columns:1fr;padding-top:48px;gap:40px}
   .projects{grid-template-columns:1fr}
-  .code-cols{grid-template-columns:1fr}
-  .code-col + .code-col{border-left:0}
   .game{height:260px;--gw:calc(100vw - 24px)}
   .metrics{grid-template-columns:1fr 1fr 1fr}
 }
@@ -178,10 +157,6 @@ footer a{color:var(--soft)}
   .metrics{grid-template-columns:1fr}
   nav a.ext{display:none}
   .chip{min-height:40px}
-  .editor{font-size:12.5px}
-  .dep-line{white-space:normal;padding-left:4ch;text-indent:-2ch}
-  .dep-line .key{white-space:normal}
-  .ln{flex-basis:34px;padding-right:10px}
   header{position:static}
   header .wrap{flex-wrap:nowrap}
   nav{flex-wrap:nowrap;overflow-x:auto}
