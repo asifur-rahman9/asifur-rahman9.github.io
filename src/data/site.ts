@@ -95,42 +95,25 @@ export const minorProjects = [
   { hash: 'dbb5b1d', title: 'Heap from scratch in Java', repo: 'heap-implementation' },
 ];
 
-// Toolbox, shown as a package.json. Keys are the JSON fields.
-export const toolGroups: [string, string[]][] = [
-  ['languages', ['Java', 'Python', 'TypeScript', 'SQL', 'C++', 'Bash']],
-  ['backend', ['Spring Boot', 'Node.js', 'Express', 'React', 'JUnit', 'Pytest', 'Vitest']],
-  ['cloudDevops', ['AWS', 'Jenkins', 'Ansible', 'Docker', 'GitHub Actions', 'Liquibase', 'Maven', 'Linux']],
-  ['data', ['PostgreSQL', 'MongoDB', 'SQL Server', 'scikit-learn', 'OpenGL']],
+// Toolbox, shown as a package.json: each dependency maps to where I used it.
+export const toolGroups: [string, [string, string][]][] = [
+  ['languages', [
+    ['Java', 'BMO, HEXA'], ['Python', 'BMO, BIXI monitor'], ['TypeScript', 'booking platform, this site'],
+    ['SQL', 'BMO, HEXA'], ['C++', 'Hammerfall Grove'], ['Bash', 'BMO pipelines'],
+  ]],
+  ['backend', [
+    ['Spring Boot', 'BMO, HEXA'], ['Node.js', 'booking platform'], ['Express', 'booking platform'],
+    ['React', 'HEXA, this site'], ['JUnit', 'BMO, HEXA'], ['Pytest', 'BIXI monitor'],
+  ]],
+  ['cloud & devops', [
+    ['AWS', 'BMO (Lambda, S3, Bedrock)'], ['Jenkins', 'BMO, 7 installations'], ['Ansible', 'BMO'],
+    ['Docker', 'BIXI monitor, booking'], ['GitHub Actions', 'every repo here'], ['Liquibase', 'BMO'],
+  ]],
+  ['data', [
+    ['PostgreSQL', 'BMO (Aurora)'], ['SQL Server', 'BMO'], ['MongoDB', 'booking platform'],
+    ['scikit-learn', 'BIXI monitor'], ['OpenGL', 'Hammerfall Grove'],
+  ]],
 ];
-
-export const usedIn: Record<string, string> = {
-  Java: 'BMO, HEXA, Heap from scratch',
-  Python: 'BIXI Station Monitor, Coverage analyzer, NeetCode',
-  TypeScript: 'Service booking platform',
-  SQL: 'BMO, HEXA',
-  'C++': 'Hammerfall Grove',
-  Bash: 'BMO, every repo here',
-  'Spring Boot': 'BMO, HEXA',
-  'Node.js': 'Service booking platform',
-  Express: 'Service booking platform',
-  React: 'HEXA, Service booking platform, this site',
-  JUnit: 'BMO, HEXA',
-  Pytest: 'BIXI Station Monitor',
-  Vitest: 'Service booking platform, this site',
-  AWS: 'BMO (Lambda, S3, Bedrock, Aurora)',
-  Jenkins: 'BMO',
-  Ansible: 'BMO',
-  Docker: 'BIXI Station Monitor, Service booking platform',
-  'GitHub Actions': 'BIXI Station Monitor, Hammerfall Grove, this site',
-  Liquibase: 'BMO',
-  Maven: 'BMO',
-  Linux: 'BMO, everyday',
-  PostgreSQL: 'BMO (Aurora)',
-  MongoDB: 'Service booking platform',
-  'SQL Server': 'BMO',
-  'scikit-learn': 'BIXI Station Monitor',
-  OpenGL: 'Hammerfall Grove',
-};
 
 // Resume content for the terminal (kept verbatim from the resume PDF).
 export type Job = { title: string; dates: string; org: string; place: string; bullets: string[] };

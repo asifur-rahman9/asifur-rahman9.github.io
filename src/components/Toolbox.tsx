@@ -1,43 +1,40 @@
-import { useState } from 'react';
-
-// Toolbox rendered as a package.json. Hover or focus a tool to preview where it was used;
-// click to pin it. The "used in" line reads like an editor's inline hint.
-export default function Toolbox({ groups, usedIn }: { groups: [string, string[]][]; usedIn: Record<string, string> }) {
-  const [pinned, setPinned] = useState<string | null>(null);
-  const [hover, setHover] = useState<string | null>(null);
-  const tool = hover ?? pinned;
+// Toolbox as a package.json open in an editor: every dependency shows where it was used.
+// Static content (no client JS needed); rows highlight on hover via CSS.
+export default function Toolbox({ groups }: { groups: [string, [string, string][]][] }) {
+  let n = 2; // line numbers continue through the file
+  const total = groups.reduce((k, [, d]) => k + d.length, 0);
+  const half = Math.ceil(groups.length / 2);
+  const cols = [groups.slice(0, half), groups.slice(half)];
 
   return (
-    <div className="pkg mono">
-      <div className="pkg-top"><span>asifur/package.json</span><span>{groups.reduce((n, [, t]) => n + t.length, 0)} deps</span></div>
-      <div className="pkg-body" onMouseLeave={() => setHover(null)}>
-        <span className="pun">{'{'}</span>
-        {groups.map(([key, items], gi) => (
-          <div key={key} className="pkg-row">
-            <span className="key">"{key}"</span><span className="pun">: [</span>
-            <span className="vals">
-              {items.map((t, i) => (
-                <span key={t}>
-                  <button
-                    type="button"
-                    className={`str ${t === pinned ? 'on' : ''}`}
-                    aria-pressed={t === pinned}
-                    onMouseEnter={() => setHover(t)}
-                    onFocus={() => setHover(t)}
-                    onBlur={() => setHover(null)}
-                    onClick={() => setPinned(pinned === t ? null : t)}
-                  >"{t}"</button>
-                  {i < items.length - 1 && <span className="pun">, </span>}
-                </span>
-              ))}
-            </span>
-            <span className="pun">]{gi < groups.length - 1 ? ',' : ''}</span>
-          </div>
-        ))}
-        <span className="pun">{'}'}</span>
+    <div className="editor mono">
+      <div className="editor-top">
+        <span className="tab"><i aria-hidden="true" />package.json</span>
+        <span className="muted">{total} dependencies</span>
       </div>
-      <div className="pkg-hint" aria-live="polite">
-        {tool ? <><span className="cm">// {tool}:</span> used in {usedIn[tool] ?? 'ask me about it'}</> : <span className="cm">// hover a dependency to see where I used it</span>}
+      <div className="code">
+        <div className="ln-row"><span className="ln">1</span><span><span className="pun">{'{ '}</span><span className="key">"dependencies"</span><span className="pun">{': {'}</span></span></div>
+        <div className="code-cols">
+          {cols.map((col, ci) => (
+            <div key={ci} className="code-col">
+              {col.map(([group, deps]) => (
+                <div key={group} className="dep-group">
+                  <div className="ln-row"><span className="ln">{n++}</span><span className="cm">{`// ${group}`}</span></div>
+                  {deps.map(([tool, where], di) => (
+                    <div key={tool} className="ln-row dep">
+                      <span className="ln">{n++}</span>
+                      <span className="dep-line">
+                        <span className="key">{`"${tool}"`}</span><span className="pun">: </span>
+                        <span className="str">"{where}"</span>{!(ci === cols.length - 1 && group === col[col.length - 1][0] && di === deps.length - 1) && <span className="pun">,</span>}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="ln-row"><span className="ln">{n++}</span><span className="pun">{'} }'}</span></div>
       </div>
     </div>
   );

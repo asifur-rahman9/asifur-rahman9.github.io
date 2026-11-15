@@ -76,7 +76,8 @@ export default function HeroScene() {
 
     let raf = 0, last = performance.now();
     const step = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
+      // rAF timestamps can predate performance.now() on the first frame; never step backwards
+      const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
       last = now;
       st.t += dt;
       update(dt);
