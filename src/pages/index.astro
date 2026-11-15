@@ -21,18 +21,9 @@ const year = new Date().getFullYear();
   </div></header>
 
   <main>
-    <section id="about"><div class="wrap hero">
-      <div class="hero-text">
-        <span class="status"><i aria-hidden="true"></i>{site.status}</span>
-        <h1>I build backend systems and the pipelines that ship them.</h1>
-        <p class="lede">I'm a final-year CS (Co-op) student at Concordia, graduating in 2027. I spent two co-op terms on BMO Capital Markets' platform and infrastructure teams, working on Java services, AWS, Jenkins and database automation.</p>
-        <div class="ctas">
-          <a class="btn primary" href="#projects">See my projects</a>
-          {site.resume && <a class="btn" href={site.resume}>Resume ↓</a>}
-          <a class="btn" href={`mailto:${site.email}`}>Email me</a>
-          <a class="btn" href={site.github}>GitHub</a>
-        </div>
-      </div>
+    <section id="about"><div class="wrap cli-hero">
+      <h1 class="sr-only">Asifur Rahman, backend and platform developer</h1>
+      <p class="cli-hint">Type <kbd>help</kbd> and press Enter. <kbd>Tab</kbd> completes a command, <kbd>↑</kbd> brings back the last one.</p>
       <Terminal client:load />
     </div>
     <HeroScene client:load />
@@ -43,7 +34,7 @@ const year = new Date().getFullYear();
         <h2>Projects</h2>
         <p class="sub">My work as a commit history. Pick a commit to read it.</p>
       </div>
-      <ProjectExplorer client:visible projects={projects} minor={minorProjects} github={site.github} initial={activity} />
+      <ProjectExplorer client:idle projects={projects} minor={minorProjects} github={site.github} initial={activity} />
     </div></section>
 
     <section id="toolbox"><div class="wrap sec toolbox">

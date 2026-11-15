@@ -56,7 +56,7 @@ export default function HeroScene() {
     guyX: -70, guyMode: 'walk' as GuyMode, guyT: 0,
     dogX: 900, dogDir: -1, dogMode: 'sleep' as DogMode, wakeAt: Infinity, until: 0,
     carrying: false, flight: null as Flight | null, stickGround: null as number | null,
-    petUntil: 0, petKey: 0,
+    petUntil: 0, petKey: 0, sipUntil: 0,
   });
   const [, render] = useState(0);
 
@@ -73,11 +73,13 @@ export default function HeroScene() {
     const ro = new ResizeObserver(measure);
     if (box.current) ro.observe(box.current);
     window.addEventListener('pet-dog', pet); // terminal "pet" command
+    const sip = () => { st.sipUntil = st.t + 1.8; render((n) => n + 1); };
+    window.addEventListener('sip-coffee', sip); // terminal "coffee" command
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       Object.assign(st, { t: 10, guyX: home(), guyMode: 'code', dogX: rest(), dogMode: 'sit', dogDir: -1 });
       render((n) => n + 1);
-      return () => { ro.disconnect(); window.removeEventListener('pet-dog', pet); };
+      return () => { ro.disconnect(); window.removeEventListener('pet-dog', pet); window.removeEventListener('sip-coffee', sip); };
     }
 
     let raf = 0, last = performance.now();
@@ -90,7 +92,7 @@ export default function HeroScene() {
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
-    return () => { cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener('pet-dog', pet); };
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener('pet-dog', pet); window.removeEventListener('sip-coffee', sip); };
   }, []);
 
   function moveDog(x: number, speed: number, dt: number) {
@@ -167,7 +169,8 @@ export default function HeroScene() {
   const dogLegs = running ? (Math.floor(t / 0.09) % 2 ? 'b' : 'a') : st.dogMode === 'sleep' ? 'a' : 'sit';
 
   const sitting = st.guyMode !== 'walk';
-  const pose: SitPose = st.guyMode === 'windup' ? 'windup' : st.guyMode === 'release' ? 'release'
+  const sipping = t < st.sipUntil && (st.guyMode === 'code' || st.guyMode === 'settle');
+  const pose: SitPose = sipping ? 'sip' : st.guyMode === 'windup' ? 'windup' : st.guyMode === 'release' ? 'release'
     : st.guyMode === 'settle' ? 'typeA' : (Math.floor(t * 7) % 2 ? 'typeA' : 'typeB');
   const blink = t % 3.7 < 0.14;
   const walkFrame = Math.floor(t / 0.2) % 2;
@@ -184,7 +187,7 @@ export default function HeroScene() {
     <div className="scene" ref={box}>
       <div className="floor" aria-hidden="true" />
 
-      {sitting && (
+      {sitting && !sipping && (
         <span className="mug" style={{ left: st.guyX - 34 }} aria-hidden="true">
           <i className="steam" /><i className="steam s2" />
           <Sprite rects={MUG} w={7} h={5} />

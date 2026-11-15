@@ -116,11 +116,13 @@ const ARM_TYPE_A: Pix[] = [[10, 11, 'L'], [11, 11, 'L'], [11, 12, 'L'], [12, 12,
 const ARM_TYPE_B: Pix[] = [[10, 11, 'L'], [11, 11, 'L'], [11, 12, 'L'], [12, 12, 'L'], [12, 13, 'L'], [13, 13, 'L'], [14, 13, 'S'], [16, 14, 'S'], [17, 14, 'S']];
 const ARM_WINDUP: Pix[] = [[4, 9, 'L'], [3, 8, 'L'], [4, 8, 'L'], [3, 7, 'L'], [2, 6, 'L'], [3, 6, 'L'], [2, 5, 'L'], [1, 4, 'S'], [2, 4, 'S'], [0, 3, 'T'], [-1, 2, 'T'], [-2, 1, 'T'], [15, 14, 'S']];
 const ARM_RELEASE: Pix[] = [[11, 10, 'L'], [12, 9, 'L'], [12, 10, 'L'], [13, 8, 'L'], [13, 9, 'L'], [14, 7, 'L'], [14, 8, 'L'], [15, 6, 'L'], [16, 5, 'S'], [16, 6, 'S'], [15, 14, 'S']];
+const ARM_SIP: Pix[] = [[10, 10, 'L'], [11, 10, 'L'], [11, 9, 'L'], [12, 9, 'L'], [12, 8, 'S'],
+  [12, 5, 'W'], [13, 5, 'W'], [12, 6, 'W'], [13, 6, 'C'], [12, 7, 'W'], [13, 7, 'W'], [14, 6, 'W'], [15, 14, 'S']];
 const BLINK: Pix[] = [[11, 4, 's']];
 
 export const SIT_SIZE = { w: 21, h: 20 };
-export type SitPose = 'typeA' | 'typeB' | 'windup' | 'release';
-const ARMS: Record<SitPose, Pix[]> = { typeA: ARM_TYPE_A, typeB: ARM_TYPE_B, windup: ARM_WINDUP, release: ARM_RELEASE };
+export type SitPose = 'typeA' | 'typeB' | 'windup' | 'release' | 'sip';
+const ARMS: Record<SitPose, Pix[]> = { typeA: ARM_TYPE_A, typeB: ARM_TYPE_B, windup: ARM_WINDUP, release: ARM_RELEASE, sip: ARM_SIP };
 const cache = new Map<string, Rect[]>();
 export function sitRects(pose: SitPose, blink: boolean): Rect[] {
   const key = pose + blink;

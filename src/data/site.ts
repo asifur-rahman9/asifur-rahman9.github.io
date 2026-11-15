@@ -131,3 +131,60 @@ export const usedIn: Record<string, string> = {
   'scikit-learn': 'BIXI Station Monitor',
   OpenGL: 'Hammerfall Grove',
 };
+
+// Resume content for the terminal (kept verbatim from the resume PDF).
+export type Job = { title: string; dates: string; org: string; place: string; bullets: string[] };
+export const experience: Job[] = [
+  {
+    title: 'Software Developer Intern', dates: 'May to August 2026',
+    org: 'BMO Capital Markets, Platform & Infrastructure Development', place: 'Toronto, Ontario',
+    bullets: [
+      'Built a multithreaded Java reconciler indexing market data by composite key, surfacing discrepancies against AWS S3 archives',
+      'Replaced a deprecated Bitbucket REST library with a native Java client, clearing transitive CVEs blocking platform upgrades',
+      'Automated deployments across 7 installations and 4 environments using parameterized, config-driven Jenkins pipelines on Linux',
+      'Implemented column-level dynamic data masking on Aurora PostgreSQL with role-based controls to protect sensitive PII data',
+    ],
+  },
+  {
+    title: 'DevOps Engineer Intern', dates: 'September 2025 to April 2026',
+    org: 'BMO Financial Group, Corporate Database DevOps', place: 'Toronto, Ontario',
+    bullets: [
+      'Built an AWS Lambda pipeline in Python to parse DDL, leveraging Bedrock AI models for CI/CD compliance validation reports',
+      'Orchestrated Liquibase deployment and rollback across Linux hosts via Ansible, onboarding 3 vendor teams to the pipeline',
+      'Designed MS SQL Server changelogs for automated Liquibase regression testing, driven by Bash scripts sequencing Ansible jobs',
+      'Documented Liquibase deployment and rollback workflows in guides adopted by developers and vendor teams as standard reference',
+    ],
+  },
+  {
+    title: 'Web Developer', dates: 'January to April 2025',
+    org: 'Concordia University, Open Educational Resources', place: 'Montreal, Québec',
+    bullets: [
+      'Built accessible HTML/CSS templates for open educational resources, achieving over 95% WCAG 2.1 AA standard compliance',
+      'Engineered an open-source plugin in PHP and JavaScript to simplify interactive element creation for non-technical users',
+      'Authored the technical guide for publishing accessible web resources, adopted by 50+ faculty members across 8 departments',
+    ],
+  },
+  {
+    title: 'Software Engineer Intern', dates: 'May to August 2024',
+    org: 'HEXA, Full-Stack Development', place: 'Waterloo, Ontario',
+    bullets: [
+      "Engineered reusable React component architecture for an EdTech startup's platform, ensuring responsive cross-device rendering",
+      'Designed Spring Boot services with REST APIs for real-time media streaming and 500+ concurrent document retrievals',
+      'Reduced average API response time by 30% by optimizing Spring Boot service logic and refactoring inefficient SQL queries',
+      'Built Power BI dashboards tracking engagement and performance metrics, surfacing user behavior insights for product decisions',
+    ],
+  },
+];
+
+export const skills: [string, string][] = [
+  ['Languages', 'Java, Python, TypeScript, JavaScript, C++, C, SQL, Bash'],
+  ['Frameworks & Libraries', 'Spring Boot, React, Node.js, Express.js, JUnit, Pytest, Pandas, NumPy, Scikit-learn, OpenGL'],
+  ['Technologies', 'AWS, Jenkins, Ansible, Linux, Liquibase, Docker, Git, Maven, PostgreSQL, SQL Server, MongoDB, Wireshark'],
+  ['Concepts', 'REST APIs, Multithreading, Microservices, TCP/UDP Sockets, CI/CD'],
+];
+
+export const education = {
+  school: 'Concordia University', place: 'Montreal, Québec',
+  degree: 'Bachelor of Computer Science (Co-op)', dates: 'January 2023 to December 2027',
+  coursework: 'Data Structures & Algorithms, Distributed Systems, Databases, Operating Systems, Computer Networks, Software Engineering, Web Programming, Computer Graphics, Artificial Intelligence',
+};

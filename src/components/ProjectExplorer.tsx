@@ -21,6 +21,10 @@ export default function ProjectExplorer({ projects, minor, github, initial }: {
 
   useEffect(() => {
     setNow(Date.now());
+    const pick = (e: Event) => setSel((e as CustomEvent<string>).detail);
+    const pending = (window as any).__pendingProject;
+    if (pending && projects.some((p) => p.id === pending)) setSel(pending);
+    window.addEventListener('select-project', pick); // from the terminal's `open <name>`
     const tick = setInterval(() => setNow(Date.now()), 60_000);
     const slugs = projects.map((p) => repoSlug(p.repo));
 
@@ -30,7 +34,7 @@ export default function ProjectExplorer({ projects, minor, github, initial }: {
       if (cached && Date.now() - cached.at < CACHE_MS) {
         setActivity((a) => ({ ...a, ...cached.data }));
         setSync('live');
-        return () => clearInterval(tick);
+        return () => { clearInterval(tick); window.removeEventListener('select-project', pick); };
       }
     } catch { /* storage unavailable */ }
 
@@ -40,7 +44,7 @@ export default function ProjectExplorer({ projects, minor, github, initial }: {
       setSync('live');
       try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), data })); } catch { /* ignore */ }
     });
-    return () => clearInterval(tick);
+    return () => { clearInterval(tick); window.removeEventListener('select-project', pick); };
   }, []);
 
   const when = (iso: string) => (now ? timeAgo(iso, now) : shortDate(iso));
