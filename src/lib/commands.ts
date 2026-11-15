@@ -91,7 +91,9 @@ const table: Record<string, (arg: string) => Result> = {
   'rm -rf /': () => ({ output: 'nice try' }),
   game: () => ({ output: 'scrolling to the game…', action: { type: 'scroll', id: 'break' } }),
 };
-table.whoami = table.about;
+table.whoami = () => ({
+  output: 'name     Asifur (Asif) Rahman\nrole     software engineer, prev @ BMO Capital Markets\nschool   final year, CS (Co-op) @ Concordia\nbased    Montreal (open to Toronto / remote)\ntip      type "help" to see everything',
+});
 table.ls = table.projects;
 
 /** Command names, for tab completion (hidden extras included, like a real shell). */

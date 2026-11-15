@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { banner, commandNames, formatGitLog, runCommand } from '../lib/commands';
+import { commandNames, formatGitLog, runCommand } from '../lib/commands';
 import { projects } from '../data/site';
 import { fetchActivity, repoSlug, timeAgo, type Activity } from '../lib/github';
 
@@ -26,12 +26,12 @@ type Line = { c: string; o: string };
 
 // The hero: a small interactive shell. Enter runs, Tab completes, Up/Down walk history.
 export default function Terminal() {
-  const [log, setLog] = useState<Line[]>(() => [{ c: '', o: banner }]);
+  const [log, setLog] = useState<Line[]>(() => [{ c: 'whoami', o: runCommand('whoami')!.output }]);
   const [value, setValue] = useState('');
   const [hIdx, setHIdx] = useState<number | null>(null); // position while walking history
   const body = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLInputElement>(null);
-  const [typed, setTyped] = useState<string[]>([]); // command history, survives `clear`
+  const [typed, setTyped] = useState<string[]>(['whoami']); // command history, survives `clear`
 
   useEffect(() => {
     if (body.current) body.current.scrollTop = body.current.scrollHeight;
@@ -88,14 +88,13 @@ export default function Terminal() {
   return (
     <div className="term" role="region" aria-label="Interactive terminal">
       <div className="term-top">
-        <span className="lights" aria-hidden="true"><i /><i /><i /></span>
         <span>asifur@concordia: ~</span>
         <span>zsh</span>
       </div>
       <div className="term-body" ref={body} aria-live="polite" onClick={() => input.current?.focus({ preventScroll: true })}>
         {log.map((l, i) => (
           <div key={i}>
-            {l.c && <div><span className="acc">$</span> <span className="ink">{l.c}</span></div>}
+            {l.c && <div><span className="acc">$</span> <span className="cmd">{l.c}</span></div>}
             <Out text={l.o} />
           </div>
         ))}
@@ -111,7 +110,7 @@ export default function Terminal() {
             autoCapitalize="off"
             spellCheck={false}
             enterKeyHint="go"
-            placeholder="type a command"
+            placeholder="type a command, or help"
           />
         </form>
       </div>
