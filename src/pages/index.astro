@@ -28,7 +28,11 @@ const year = new Date().getFullYear();
   <main>
     <section id="about"><div class="wrap cli-hero">
       <h1 class="sr-only">Asifur Rahman, backend and platform developer</h1>
-      <p class="cli-hint">Type <kbd>help</kbd> and press Enter. <kbd>↑</kbd> <kbd>↓</kbd> cycle through commands, <kbd>Tab</kbd> completes one.</p>
+      <dl class="cli-keys" aria-label="Terminal shortcuts">
+        <div><dt><kbd>help</kbd></dt><dd>type it and press Enter</dd></div>
+        <div class="kb-only"><dt><kbd>↑</kbd> <kbd>↓</kbd></dt><dd>cycle through commands</dd></div>
+        <div class="kb-only"><dt><kbd>Tab</kbd></dt><dd>complete a command</dd></div>
+      </dl>
       <Terminal client:load />
     </div>
     <HeroScene client:load />
