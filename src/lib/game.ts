@@ -282,14 +282,14 @@ export function mountGame(host: HTMLElement): () => void {
     // particles and floating text
     for (const p of G.parts) { ctx.globalAlpha = Math.max(0, p.life / p.max); ctx.fillStyle = p.c; ctx.fillRect(p.x, p.y, p.s, p.s); }
     ctx.globalAlpha = 1;
-    ctx.font = '700 14px Silkscreen, "IBM Plex Mono", monospace';
+    ctx.font = '400 22px "Departure Mono", "Geist Mono", monospace';
     for (const f of G.floats) { ctx.globalAlpha = Math.min(1, f.life * 2); ctx.fillStyle = '#FFFFFF'; ctx.fillText(f.text, f.x, f.y); }
     ctx.globalAlpha = 1;
     ctx.restore();
 
     // HUD
     const dark = nf > 0.5 || se.kind === 'fall' && se.name === 'autumn' && nf > 0.3;
-    ctx.font = '500 13px "IBM Plex Mono", ui-monospace, monospace';
+    ctx.font = '500 13px "Geist Mono", ui-monospace, monospace';
     ctx.textAlign = 'right';
     ctx.fillStyle = dark ? '#E5EAF2' : '#1F2733';
     const pad = (n: number) => String(Math.floor(n)).padStart(5, '0');
@@ -297,7 +297,7 @@ export function mountGame(host: HTMLElement): () => void {
     ctx.textAlign = 'left';
     if (G.state === 'run' && G.mult > 1) {
       const label = `${G.multName} x${G.mult}  ${Math.ceil(G.multLeft)}s`;
-      ctx.font = '600 13px "IBM Plex Mono", monospace';
+      ctx.font = '600 13px "Geist Mono", monospace';
       const w = ctx.measureText(label).width + 20;
       ctx.fillStyle = '#8AB4FF'; ctx.beginPath(); ctx.roundRect(16, 12, w, 24, 12); ctx.fill();
       ctx.fillStyle = '#0E1422'; ctx.fillText(label, 26, 29);
@@ -306,13 +306,13 @@ export function mountGame(host: HTMLElement): () => void {
       const lines = G.state === 'ready'
         ? ['click, tap or press space to start', 'tap again in the air to flap']
         : [G.newBest ? `new best! ${Math.floor(G.best)}` : `ouch, cactus. score ${Math.floor(G.score)}`, 'click or press space to try again'];
-      ctx.font = '600 15px "IBM Plex Mono", monospace';
+      ctx.font = '600 15px "Geist Mono", monospace';
       const w = Math.max(...lines.map((l) => ctx.measureText(l).width)) + 36;
       const bx = W / 2 - w / 2, by = H * 0.28;
       ctx.fillStyle = 'rgba(14,20,34,.82)'; ctx.beginPath(); ctx.roundRect(bx, by, w, 62, 10); ctx.fill();
       ctx.textAlign = 'center';
       ctx.fillStyle = G.newBest && G.state === 'over' ? '#FDE68A' : '#F2F4F7'; ctx.fillText(lines[0], W / 2, by + 26);
-      ctx.font = '500 12.5px "IBM Plex Mono", monospace'; ctx.fillStyle = '#AEB8C8'; ctx.fillText(lines[1], W / 2, by + 47);
+      ctx.font = '500 12.5px "Geist Mono", monospace'; ctx.fillStyle = '#AEB8C8'; ctx.fillText(lines[1], W / 2, by + 47);
       ctx.textAlign = 'left';
     }
   }
