@@ -1,7 +1,8 @@
 ---
 import '../styles/global.css';
 import { site } from '../data/site';
-const og = new URL('/og.png', site.url).href;
+// Bump ?v= whenever og.png changes so link previews (LinkedIn, Slack, iMessage) refetch it.
+const og = new URL('/og.png?v=2', site.url).href;
 ---
 <!doctype html>
 <html lang="en">
