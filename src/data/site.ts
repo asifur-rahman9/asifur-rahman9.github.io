@@ -34,6 +34,7 @@ export type Project = {
   repo: string;
 };
 
+// Featured projects, shown in this order (same as the resume). Minor projects are sorted by latest push.
 export const projects: Project[] = [
   {
     id: 'campusshare',
@@ -58,28 +59,6 @@ export const projects: Project[] = [
       { path: 'docs/images/05-node-offline.png', alt: 'Search still working on two campuses after LOY goes offline' },
     ],
     repo: 'https://github.com/asifur-rahman9/campusshare-grpc',
-  },
-  {
-    id: 'bixi',
-    hash: '51daec1',
-    date: 'Jun 2025 to now',
-    title: 'BIXI Station Monitor',
-    summary: 'Live BIXI bike availability in Montreal plus hourly demand forecasts, built with Python and Streamlit',
-    body: "Maps every station from BIXI's live GBFS feed, colored by how full it is, and lists the ones that are nearly empty or nearly full. A gradient boosting model trained on 2025 trips and hourly weather forecasts departures and arrivals for the next 48 hours at the 50 busiest stations.",
-    stack: ['Python', 'pandas', 'scikit-learn', 'Streamlit', 'pytest', 'Docker'],
-    metrics: [
-      { value: '32%', label: 'lower error than same hour last week' },
-      { value: '256,800', label: 'station-hours of real 2025 trips' },
-      { value: '48 h', label: 'weather-aware forecast window' },
-    ],
-    badges: ['CI', 'Docker', 'Tests'],
-    images: [
-      { path: 'docs/media/live-map.jpg', alt: 'Live map of BIXI stations colored by bike availability' },
-      { path: 'docs/media/forecast.jpg', alt: 'Forecast tab with predicted departures and arrivals' },
-      { path: 'docs/media/model.jpg', alt: 'Model tab with accuracy and actual vs predicted trips' },
-      { path: 'docs/media/before-v1.jpg', alt: 'The first version of the app' },
-    ],
-    repo: 'https://github.com/asifur-rahman9/bixi-demand-forecaster',
   },
   {
     id: 'booking',
@@ -127,6 +106,28 @@ export const projects: Project[] = [
       { path: 'docs/media/catch.jpg', alt: 'Catching an ember near the hammer arm' },
     ],
     repo: 'https://github.com/asifur-rahman9/hammerfall-grove',
+  },
+  {
+    id: 'bixi',
+    hash: '51daec1',
+    date: 'Jun 2025 to now',
+    title: 'BIXI Station Monitor',
+    summary: 'Live BIXI bike availability in Montreal plus hourly demand forecasts, built with Python and Streamlit',
+    body: "Maps every station from BIXI's live GBFS feed, colored by how full it is, and lists the ones that are nearly empty or nearly full. A gradient boosting model trained on 2025 trips and hourly weather forecasts departures and arrivals for the next 48 hours at the 50 busiest stations.",
+    stack: ['Python', 'pandas', 'scikit-learn', 'Streamlit', 'pytest', 'Docker'],
+    metrics: [
+      { value: '32%', label: 'lower error than same hour last week' },
+      { value: '256,800', label: 'station-hours of real 2025 trips' },
+      { value: '48 h', label: 'weather-aware forecast window' },
+    ],
+    badges: ['CI', 'Docker', 'Tests'],
+    images: [
+      { path: 'docs/media/live-map.jpg', alt: 'Live map of BIXI stations colored by bike availability' },
+      { path: 'docs/media/forecast.jpg', alt: 'Forecast tab with predicted departures and arrivals' },
+      { path: 'docs/media/model.jpg', alt: 'Model tab with accuracy and actual vs predicted trips' },
+      { path: 'docs/media/before-v1.jpg', alt: 'The first version of the app' },
+    ],
+    repo: 'https://github.com/asifur-rahman9/bixi-demand-forecaster',
   },
 ];
 

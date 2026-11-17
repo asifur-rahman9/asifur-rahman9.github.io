@@ -21,7 +21,7 @@ describe('terminal commands', () => {
   it('opens projects by short name', () => {
     expect(runCommand('open hammerfall')?.action).toEqual({ type: 'project', id: 'hammerfall' });
     expect(runCommand('open GRPC')?.action).toEqual({ type: 'project', id: 'campusshare' }); // alias
-    expect(runCommand('open nope')?.output).toBe('no project called "nope". try: campusshare, bixi, booking, hammerfall');
+    expect(runCommand('open nope')?.output).toBe('no project called "nope". try: campusshare, booking, hammerfall, bixi');
   });
   it('returns side effects as actions', () => {
     expect(runCommand('github')?.action).toEqual({ type: 'open', url: 'https://github.com/asifur-rahman9' });

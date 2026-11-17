@@ -16,14 +16,14 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
 
   const [activity, setActivity] = useState<Activity>(initial);
   const [repos, setRepos] = useState<Repos>(initialRepos);
-  const [picked, setPicked] = useState<string | null>(null); // null: follow the newest project
+  const [sel, setSel] = useState(projects[0].id);
   const [sync, setSync] = useState<Sync>(Object.keys(initial).length ? 'build' : 'stale');
   const [now, setNow] = useState<number | null>(null); // null until mounted: SSR shows absolute dates
   const [shot, setShot] = useState<Record<string, number>>({}); // selected screenshot per project
 
   useEffect(() => {
     setNow(Date.now());
-    const pick = (id?: string) => { if (id && projects.some((p) => p.id === id)) setPicked(id); };
+    const pick = (id?: string) => { if (id && projects.some((p) => p.id === id)) setSel(id); };
     pick(window.__pendingProject);
     const unlisten = listen(EVENTS.selectProject, pick); // from the terminal's `open <name>`
     const tick = setInterval(() => setNow(Date.now()), 60_000);
@@ -52,8 +52,6 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
   const when = (iso: string) => (now ? timeAgo(iso, now) : shortDate(iso));
   const latest = (slug: string) => activity[slug]?.[0];
   const describe = (p: Project) => repos[slugOf(p)]?.description || p.summary;
-  const ordered = newestFirst(projects, slugOf, activity);
-  const sel = picked ?? ordered[0].id; // until the visitor picks one, show the newest (also after a live refresh)
 
   return (
     <div className="projects">
@@ -67,10 +65,10 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
         )}
         <span className="rail" aria-hidden="true" />
         <div className="commits">
-          {ordered.map((p) => {
+          {projects.map((p) => {
             const on = p.id === sel, c = latest(slugOf(p));
             return (
-              <button key={p.id} type="button" className={`commit ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => setPicked(p.id)}>
+              <button key={p.id} type="button" className={`commit ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => setSel(p.id)}>
                 <span className="dot" aria-hidden="true"><i /></span>
                 <span className="commit-text">
                   <span className="small muted">
