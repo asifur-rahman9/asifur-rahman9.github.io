@@ -30,7 +30,7 @@ const QUACKS = ['quack!', 'quack', 'qwak!', '!!'];
 export default function HeroScene() {
   const box = useRef<HTMLDivElement>(null);
   const s = useRef({
-    t: 0, w: 1200,
+    t: 0, w: 1200, left: 60, right: 1140, // scene width and the content column's edges inside it
     guyX: -70, guyMode: 'walk' as GuyMode, guyT: 0,
     duckX: 900, duckDir: -1, duckMode: 'sleep' as DuckMode, wakeAt: Infinity, until: 0, modeT: 0,
     carrying: false, flight: null as Flight | null, stickGround: null as number | null,
@@ -38,10 +38,9 @@ export default function HeroScene() {
   });
   const [, render] = useState(0);
 
-  // Keep the scene inside the page's content column (.wrap: max 1200px, padding clamp(20px, 5vw, 64px)).
-  const inset = () => { const w = s.current.w; return Math.max(0, (w - 1200) / 2) + Math.min(64, Math.max(20, w * 0.05)); };
-  const right = () => s.current.w - inset();
-  const home = () => inset() + 8; // left edge of the chair + desk
+  // The scene spans the full section; characters stay inside the page's content column.
+  const right = () => s.current.right;
+  const home = () => s.current.left + 8; // left edge of the chair + desk
   const seatX = () => home() + 2 * PX; // where he stops walking, in front of the chair
   const rest = () => home() + SEAT_SIZE.w * PX + 14; // duck waits just past the table
 
@@ -59,7 +58,17 @@ export default function HeroScene() {
 
   useEffect(() => {
     const st = s.current;
-    const measure = () => { st.w = box.current?.offsetWidth ?? st.w; };
+    // measure the hero's .wrap (minus its padding) so the column always matches the CSS
+    const measure = () => {
+      const el = box.current;
+      if (!el) return;
+      st.w = el.offsetWidth;
+      const wrap = el.closest('section')?.querySelector<HTMLElement>('.wrap');
+      if (!wrap) { st.left = 0; st.right = st.w; return; }
+      const scene = el.getBoundingClientRect(), col = wrap.getBoundingClientRect(), css = getComputedStyle(wrap);
+      st.left = col.left - scene.left + parseFloat(css.paddingLeft);
+      st.right = col.right - scene.left - parseFloat(css.paddingRight);
+    };
     measure();
     st.duckX = right() - DUCK_W - 8;
     const ro = new ResizeObserver(measure);
