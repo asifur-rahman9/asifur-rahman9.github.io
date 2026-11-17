@@ -1,7 +1,9 @@
 // Pixel-art sprites as character grids. Each char maps to a colour; '.' is empty.
 // Grids are converted once into run-length <rect> lists for cheap SVG rendering.
 
-export const PAL: Record<string, string> = {
+/** Hero palette. Other sprite sets (the game) pass their own palette to toRects instead of extending this. */
+export const PAL: Readonly<Record<string, string>> = {
+  // developer
   H: '#1A1416', h: '#3A2E2E', // hair
   S: '#D8A27A', s: '#B9825C', // skin, skin shadow
   E: '#1B1B1F', R: '#9C5B45', // eye, mouth
@@ -11,28 +13,36 @@ export const PAL: Record<string, string> = {
   M: '#C9CED6', m: '#8E959F', // MacBook aluminium
   T: '#8B5A2B', // stick
   W: '#F2F4F8', w: '#C4CBD6', C: '#6B3F22', // mug, mug shade, coffee
+  r: '#A8654F', // closed mouth (lip line)
+  // desk
+  A: '#AFC0D2', a: '#8A9BB0', O: '#5A3426', // armchair cushion, shade, wooden legs
+  N: '#8E5A44', n: '#6E4234', V: '#5E6B7C', // table top, edge, pedestal
+  // call duck: white feathers with soft grey shading, orange beak and feet, pink cheek
+  U: '#FAFBFD', u: '#D6DDE8', v: '#AEB8C7', // feathers, shade, belly shade
+  Y: '#F7A928', y: '#E0801A', Q: '#FB8C3C', // beak, beak shade, feet
+  X: '#15171C', Z: '#F6A5C0', // eye, cheek
 };
 
 export type Rect = [x: number, y: number, w: number, fill: string];
 export type Pix = [x: number, y: number, ch: string];
 
 /** Run-length encode rows of a grid (plus optional single-pixel overlays) into rects. */
-export function toRects(rows: string[], overlay: Pix[] = []): Rect[] {
+export function toRects(rows: string[], overlay: Pix[] = [], pal: Readonly<Record<string, string>> = PAL): Rect[] {
   const g = rows.map((r) => r.split(''));
   const extra: Rect[] = [];
   for (const [x, y, ch] of overlay) {
     if (y >= 0 && y < g.length && x >= 0 && x < (g[y]?.length ?? 0)) g[y][x] = ch;
-    else extra.push([x, y, 1, PAL[ch]]); // pixels outside the grid (raised arm, stick)
+    else extra.push([x, y, 1, pal[ch]]); // pixels outside the grid (raised arm, stick)
   }
   const out: Rect[] = [];
   g.forEach((row, y) => {
     let x = 0;
     while (x < row.length) {
       const ch = row[x];
-      if (ch === '.' || !PAL[ch]) { x++; continue; }
+      if (ch === '.' || !pal[ch]) { x++; continue; }
       let w = 1;
       while (row[x + w] === ch) w++;
-      out.push([x, y, w, PAL[ch]]);
+      out.push([x, y, w, pal[ch]]);
       x += w;
     }
   });
@@ -90,11 +100,6 @@ export const WALK = [toRects([...WALK_TOP, ...LEGS_APART]), toRects([...WALK_TOP
 export const WALK_SIZE = { w: 14, h: 29 };
 
 // ---------- seated at a desk (32 x 26): armchair, developer, table, MacBook, mug ----------
-Object.assign(PAL, {
-  A: '#AFC0D2', a: '#8A9BB0', O: '#5A3426', // armchair cushion, shade, wooden legs
-  r: '#A8654F', // closed mouth (lip line)
-  N: '#8E5A44', n: '#6E4234', V: '#5E6B7C', // table top, edge, pedestal
-});
 const W32 = 30, H26 = 26; // composite width/height in sprite pixels
 const blank = () => Array.from({ length: H26 }, () => Array<string>(W32).fill('.'));
 const paint = (g: string[][], rows: string[], dx = 0, dy = 0) =>
@@ -191,12 +196,6 @@ export function sitRects(pose: SitPose, blink: boolean): Rect[] {
 export const MUG = toRects(['.WWWW..', '.WCCWWW', '.WWWW.W', '.WWWwWW', '..www..']);
 
 // ---------- call duck (14 x 14), facing right ----------
-// White feathers with soft grey shading, orange beak and feet, pink cheek.
-Object.assign(PAL, {
-  U: '#FAFBFD', u: '#D6DDE8', v: '#AEB8C7', // feathers, shade, belly shade
-  Y: '#F7A928', y: '#E0801A', Q: '#FB8C3C', // beak, beak shade, feet
-  X: '#15171C', Z: '#F6A5C0', // eye, cheek
-});
 
 const DUCK_BODY = [
   '.......UUUU...',

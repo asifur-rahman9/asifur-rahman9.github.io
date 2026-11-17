@@ -1,7 +1,7 @@
 // Duck runner: a small canvas game. The duck hops over cacti, flaps once in the air for a
 // double jump, and eats snacks for score multipliers. Seasons and day/night cycle as you go.
 // Best score is kept in localStorage, so it persists per browser.
-import { duckRects, toRects, PAL, type DuckFrame, type Rect } from './sprites';
+import { duckRects, toRects, type DuckFrame, type Rect } from './sprites';
 
 type Season = { name: string; sky: string; far: string; mid: string; near: string; ground: string; top: string; part: string; kind: 'fall' | 'fly' | 'snow' };
 const SEASONS: Season[] = [
@@ -19,21 +19,22 @@ const shade = (h: string, night: number, k = 0.6) => rgb(mix(hex(h), NIGHT, nigh
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 const smooth = (x: number) => x * x * (3 - 2 * x);
 
-// ---- sprites (character grids, same format as the hero scene) ----
-Object.assign(PAL, {
+// ---- sprites (character grids, same format as the hero scene, with their own palette) ----
+const GAME_PAL: Record<string, string> = {
   '1': '#2B7D47', '2': '#3A9658', '3': '#1F5F36', // cactus
   '4': '#C68642', '5': '#F5D8A0', // bread
   '6': '#FACC15', '7': '#E8A90C', '8': '#65A30D', // corn
   '9': '#FB923C', '0': '#FDBA74', // shrimp
-});
-const CACTUS = toRects([
+};
+const grid = (rows: string[]) => toRects(rows, [], GAME_PAL);
+const CACTUS = grid([
   '..121..', '..121..', '1.121..', '1.121.1', '11121.1', '..12111', '..121..', '..121..', '..121..', '..121..', '..321..', '..333..',
 ]);
 type Snack = 'bread' | 'corn' | 'shrimp';
 const SNACKS: Record<Snack, { mult: number; rects: Rect[]; color: string }> = {
-  bread: { mult: 2, color: '#F5D8A0', rects: toRects(['.4444..', '455554.', '455554.', '455554.', '455554.', '.4444..']) },
-  corn: { mult: 3, color: '#FACC15', rects: toRects(['..676..', '.67676.', '.76767.', '.67676.', '8.767.8', '.88888.']) },
-  shrimp: { mult: 5, color: '#FB923C', rects: toRects(['..9999.', '.900009', '90.....', '90.....', '.99.9..', '..999..']) },
+  bread: { mult: 2, color: '#F5D8A0', rects: grid(['.4444..', '455554.', '455554.', '455554.', '455554.', '.4444..']) },
+  corn: { mult: 3, color: '#FACC15', rects: grid(['..676..', '.67676.', '.76767.', '.67676.', '8.767.8', '.88888.']) },
+  shrimp: { mult: 5, color: '#FB923C', rects: grid(['..9999.', '.900009', '90.....', '90.....', '.99.9..', '..999..']) },
 };
 
 const PX = 4; // duck pixel size
