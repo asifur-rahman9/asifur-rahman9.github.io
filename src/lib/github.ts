@@ -4,7 +4,7 @@
 
 export type Commit = { sha: string; message: string; date: string; url: string };
 export type Activity = Record<string, Commit[]>; // keyed by "owner/repo"
-export type RepoInfo = { description: string; pushedAt: string };
+export type RepoInfo = { description: string };
 export type Repos = Record<string, RepoInfo>; // keyed by "owner/repo"
 
 const API = 'https://api.github.com';
@@ -37,12 +37,12 @@ function request(url: string, token?: string) {
   return fetch(url, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
 }
 
-/** Keep only the description and last push of each repo from /users/:user/repos. */
+/** Keep only the description of each repo from /users/:user/repos. */
 export function parseRepos(json: unknown): Repos {
   if (!Array.isArray(json)) return {};
   const out: Repos = {};
   for (const r of json as any[]) {
-    if (r?.full_name) out[r.full_name] = { description: String(r.description ?? '').trim(), pushedAt: r.pushed_at ?? '' };
+    if (r?.full_name) out[r.full_name] = { description: String(r.description ?? '').trim() };
   }
   return out;
 }

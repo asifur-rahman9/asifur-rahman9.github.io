@@ -12,7 +12,6 @@ export const site = {
   linkedin: 'https://linkedin.com/in/asifurrahman7',
   // Drop your PDF at public/resume.pdf and set this to '/resume.pdf' to show the button.
   resume: '/resume.pdf' as string | null,
-  status: 'Looking for 2027 internships and new grad roles',
 };
 
 export type Project = {

@@ -195,9 +195,6 @@ export function sitRects(pose: SitPose, blink: boolean): Rect[] {
   return cache.get(key)!;
 }
 
-// ---------- coffee mug (7 x 5) ----------
-export const MUG = toRects(['.WWWW..', '.WCCWWW', '.WWWW.W', '.WWWwWW', '..www..']);
-
 // ---------- call duck (14 x 14), facing right ----------
 
 const DUCK_BODY = [

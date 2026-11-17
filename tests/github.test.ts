@@ -44,12 +44,12 @@ describe('github helpers', () => {
     expect(out['o/good']).toHaveLength(2);
   });
 
-  it('keeps each repo description and last push, keyed by full name', () => {
+  it('keeps each repo description, keyed by full name', () => {
     const repos = parseRepos([
       { full_name: 'o/a', description: ' Booking app ', pushed_at: '2026-11-15T09:00:00Z' },
       { full_name: 'o/b', description: null, pushed_at: '2026-11-01T00:00:00Z' },
     ]);
-    expect(repos['o/a']).toEqual({ description: 'Booking app', pushedAt: '2026-11-15T09:00:00Z' });
+    expect(repos['o/a']).toEqual({ description: 'Booking app' });
     expect(repos['o/b'].description).toBe('');
     expect(parseRepos({ message: 'API rate limit exceeded' })).toEqual({});
   });

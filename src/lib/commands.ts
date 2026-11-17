@@ -1,4 +1,4 @@
-// Command table for the hero terminal. Pure: side effects (open links, scroll, pet the dog,
+// Command table for the hero terminal. Pure: side effects (open links, scroll, pet the duck,
 // fetch commits) are returned as actions so this module is testable without a DOM.
 import { site, projects, experience, skills, education } from '../data/site';
 
@@ -12,9 +12,6 @@ export type Action =
   | { type: 'clear' };
 
 export type Result = { output: string; action?: Action };
-
-export const banner =
-  'Asifur Rahman, software developer.\nFinal-year CS @ Concordia. 2x co-op @ BMO Capital Markets.\nType "help" to look around.';
 
 // Names for `open <name>`: each project's id plus its aliases, mapped to the id.
 const projectNames: Record<string, string> = Object.fromEntries(
