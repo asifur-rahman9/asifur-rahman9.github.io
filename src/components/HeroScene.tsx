@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { EVENTS, listen } from '../lib/events';
 import { DUCK_SIZE, FURNITURE, RELEASE_HAND, SEAT_SIZE, WALK, WALK_SIZE, duckRects, sitRects, type DuckFrame, type Rect, type SitPose } from '../lib/sprites';
 
 /*
@@ -64,10 +65,10 @@ export default function HeroScene() {
     st.duckX = right() - DUCK_W - 8;
     const ro = new ResizeObserver(measure);
     if (box.current) ro.observe(box.current);
-    window.addEventListener('pet-dog', pet); // terminal "pet" command
     const sip = () => { st.sipUntil = st.t + 1.8; render((n) => n + 1); };
-    window.addEventListener('sip-coffee', sip); // terminal "coffee" command
-    const cleanup = () => { ro.disconnect(); window.removeEventListener('pet-dog', pet); window.removeEventListener('sip-coffee', sip); };
+    const unPet = listen(EVENTS.petDuck, pet); // terminal "pet" command
+    const unSip = listen(EVENTS.sipCoffee, sip); // terminal "coffee" command
+    const cleanup = () => { ro.disconnect(); unPet(); unSip(); };
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       Object.assign(st, { t: 10, guyX: home(), guyMode: 'code', duckX: rest(), duckMode: 'sit', duckDir: -1 });

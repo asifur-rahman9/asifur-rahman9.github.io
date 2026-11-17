@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { commandNames, cycleCommand, formatGitLog, helpCommands, runCommand } from '../lib/commands';
 import { minorProjects, projects } from '../data/site';
 import { CACHE_KEYS, readCache, writeCache } from '../lib/cache';
+import { EVENTS, emit } from '../lib/events';
 import { fetchActivity, slugsOf, timeAgo, type Activity } from '../lib/github';
 
 // Output lines starting with "  • " get a hanging indent so wrapped bullets line up.
@@ -52,11 +53,10 @@ export default function Terminal() {
     if (a?.type === 'clear') return setLog([]);
     if (a?.type === 'open') a.url.startsWith('mailto:') ? (location.href = a.url) : window.open(a.url, '_blank', 'noopener');
     if (a?.type === 'scroll') document.getElementById(a.id)?.scrollIntoView({ behavior: 'smooth' });
-    if (a?.type === 'pet') window.dispatchEvent(new Event('pet-dog'));
-    if (a?.type === 'sip') window.dispatchEvent(new Event('sip-coffee'));
+    if (a?.type === 'pet') emit(EVENTS.petDuck);
+    if (a?.type === 'sip') emit(EVENTS.sipCoffee);
     if (a?.type === 'project') {
-      (window as any).__pendingProject = a.id; // in case Projects hasn't hydrated yet
-      window.dispatchEvent(new CustomEvent('select-project', { detail: a.id }));
+      emit(EVENTS.selectProject, a.id);
       document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
     }
     const entry = { c: cmd.trim(), o: res.output };

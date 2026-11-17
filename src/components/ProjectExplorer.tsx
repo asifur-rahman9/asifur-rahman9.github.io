@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { MinorProject, Project } from '../data/site';
 import { CACHE_KEYS, readCache, writeCache } from '../lib/cache';
+import { EVENTS, listen } from '../lib/events';
 import { fetchActivity, fetchRepos, newestFirst, rawUrl, repoSlug, shortDate, slugsOf, timeAgo, type Activity, type Repos } from '../lib/github';
 
 type Sync = 'build' | 'live' | 'stale';
@@ -22,12 +23,11 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
 
   useEffect(() => {
     setNow(Date.now());
-    const pick = (e: Event) => setSel((e as CustomEvent<string>).detail);
-    const pending = (window as any).__pendingProject;
-    if (pending && projects.some((p) => p.id === pending)) setSel(pending);
-    window.addEventListener('select-project', pick); // from the terminal's `open <name>`
+    const pick = (id?: string) => { if (id && projects.some((p) => p.id === id)) setSel(id); };
+    pick(window.__pendingProject);
+    const unlisten = listen(EVENTS.selectProject, pick); // from the terminal's `open <name>`
     const tick = setInterval(() => setNow(Date.now()), 60_000);
-    const cleanup = () => { clearInterval(tick); window.removeEventListener('select-project', pick); };
+    const cleanup = () => { clearInterval(tick); unlisten(); };
 
     // reuse a recent result (from any tab) to save rate limit
     const cachedActivity = readCache<Activity>(CACHE_KEYS.activity);
