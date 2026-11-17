@@ -53,6 +53,16 @@ describe('github helpers', () => {
     expect(parseRepos({ message: 'API rate limit exceeded' })).toEqual({});
   });
 
+  it('sends the token and a timeout with every request', async () => {
+    const fetchMock = vi.fn(async () => new Response('[]'));
+    vi.stubGlobal('fetch', fetchMock);
+    await fetchRepos('o', 'secret');
+    expect(fetchMock).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+      headers: expect.objectContaining({ Authorization: 'Bearer secret' }),
+      signal: expect.any(AbortSignal),
+    }));
+  });
+
   it('returns no repos instead of throwing when GitHub is unreachable', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline'); }));
     expect(await fetchRepos('o')).toEqual({});

@@ -8,6 +8,7 @@ export type RepoInfo = { description: string; pushedAt: string };
 export type Repos = Record<string, RepoInfo>; // keyed by "owner/repo"
 
 const API = 'https://api.github.com';
+const TIMEOUT_MS = 8000; // don't let a slow API hold up the build or the page
 
 /** "https://github.com/owner/repo" -> "owner/repo" (or just "owner" for a profile URL) */
 export const repoSlug = (url: string) => url.replace(/^https:\/\/github\.com\//, '').replace(/\/$/, '');
@@ -27,11 +28,11 @@ export function parseCommits(json: unknown, limit = 3): Commit[] {
   })).filter((c) => c.sha && c.date);
 }
 
-const headersFor = (token?: string) => {
-  const h: Record<string, string> = { Accept: 'application/vnd.github+json' };
-  if (token) h.Authorization = `Bearer ${token}`;
-  return h;
-};
+function request(url: string, token?: string) {
+  const headers: Record<string, string> = { Accept: 'application/vnd.github+json' };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return fetch(url, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
+}
 
 /** Keep only the description and last push of each repo from /users/:user/repos. */
 export function parseRepos(json: unknown): Repos {
@@ -46,18 +47,17 @@ export function parseRepos(json: unknown): Repos {
 /** Descriptions for every public repo in one request. Empty on failure, never thrown. */
 export async function fetchRepos(user: string, token?: string): Promise<Repos> {
   try {
-    const res = await fetch(`${API}/users/${user}/repos?per_page=100&sort=pushed`, { headers: headersFor(token) });
+    const res = await request(`${API}/users/${user}/repos?per_page=100&sort=pushed`, token);
     return res.ok ? parseRepos(await res.json()) : {};
   } catch { return {}; }
 }
 
 /** Fetch recent commits for each repo. Failed repos are left out, never thrown. */
 export async function fetchActivity(slugs: string[], token?: string, limit = 3): Promise<Activity> {
-  const headers = headersFor(token);
   const out: Activity = {};
   await Promise.all(slugs.map(async (slug) => {
     try {
-      const res = await fetch(`${API}/repos/${slug}/commits?per_page=${limit}`, { headers });
+      const res = await request(`${API}/repos/${slug}/commits?per_page=${limit}`, token);
       if (!res.ok) return;
       const commits = parseCommits(await res.json(), limit);
       if (commits.length) out[slug] = commits;
