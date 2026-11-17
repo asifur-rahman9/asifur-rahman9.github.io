@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fetchActivity, fetchRepos, newestFirst, parseCommits, parseRepos, rawUrl, repoSlug, shortDate, timeAgo } from '../src/lib/github';
+import { fetchActivity, fetchRepos, newestFirst, parseCommits, parseRepos, rawUrl, repoSlug, shortDate, slugsOf, timeAgo } from '../src/lib/github';
 
 const raw = [
   { sha: 'abcdef1234567', html_url: 'https://github.com/o/r/commit/abcdef1', commit: { message: 'feat: add risk board\n\nlong body', committer: { date: '2026-11-14T20:00:00Z' } } },
@@ -11,6 +11,7 @@ describe('github helpers', () => {
 
   it('extracts owner/repo from a GitHub URL', () => {
     expect(repoSlug('https://github.com/asifur-rahman9/hammerfall-grove')).toBe('asifur-rahman9/hammerfall-grove');
+    expect(slugsOf([{ repo: 'https://github.com/o/a' }, { repo: 'https://github.com/o/b/' }])).toEqual(['o/a', 'o/b']);
   });
 
   it('keeps short sha, first message line, date and url', () => {

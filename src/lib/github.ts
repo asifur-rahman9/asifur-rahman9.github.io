@@ -13,6 +13,9 @@ const TIMEOUT_MS = 8000; // don't let a slow API hold up the build or the page
 /** "https://github.com/owner/repo" -> "owner/repo" (or just "owner" for a profile URL) */
 export const repoSlug = (url: string) => url.replace(/^https:\/\/github\.com\//, '').replace(/\/$/, '');
 
+/** Slugs for every item with a `repo` URL (projects and minor projects alike). */
+export const slugsOf = (items: { repo: string }[]) => items.map((i) => repoSlug(i.repo));
+
 /** A file in a repo's default branch, served by GitHub (updates when the repo does). */
 export const rawUrl = (repo: string, path: string) =>
   `https://raw.githubusercontent.com/${repoSlug(repo)}/HEAD/${path.replace(/^\/+/, '')}`;

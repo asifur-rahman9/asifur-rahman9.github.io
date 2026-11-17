@@ -126,10 +126,12 @@ export const projects: Project[] = [
   },
 ];
 
-export const minorProjects = [
-  { hash: '6ae9818', title: 'LeetCode practice: data structures and algorithms in Python', repo: 'leetcode-practice' },
-  { hash: '2fa4a91', title: 'Cell coverage analyzer: base station heatmaps', repo: 'cell-coverage-analyzer' },
-  { hash: 'dbb5b1d', title: 'Heap from scratch in Java', repo: 'heap-implementation' },
+export type MinorProject = { hash: string; title: string; repo: string };
+
+export const minorProjects: MinorProject[] = [
+  { hash: '6ae9818', title: 'LeetCode practice: data structures and algorithms in Python', repo: 'https://github.com/asifur-rahman9/leetcode-practice' },
+  { hash: '2fa4a91', title: 'Cell coverage analyzer: base station heatmaps', repo: 'https://github.com/asifur-rahman9/cell-coverage-analyzer' },
+  { hash: 'dbb5b1d', title: 'Heap from scratch in Java', repo: 'https://github.com/asifur-rahman9/heap-implementation' },
 ];
 
 // Resume content for the terminal (kept verbatim from the resume PDF).

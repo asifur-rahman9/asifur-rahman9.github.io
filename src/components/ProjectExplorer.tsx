@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import type { Project } from '../data/site';
-import { fetchActivity, fetchRepos, newestFirst, rawUrl, repoSlug, shortDate, timeAgo, type Activity, type Repos } from '../lib/github';
+import type { MinorProject, Project } from '../data/site';
+import { fetchActivity, fetchRepos, newestFirst, rawUrl, repoSlug, shortDate, slugsOf, timeAgo, type Activity, type Repos } from '../lib/github';
 
-type Minor = { hash: string; title: string; repo: string };
 type Sync = 'build' | 'live' | 'stale';
 
 const CACHE_KEY = 'gh-activity-v1'; // also read by the terminal's `git log`
@@ -23,11 +22,9 @@ function writeCache(key: string, data: unknown) {
 // (only the selected one is visible). Commits and repo descriptions ship from the last build,
 // then refresh from the GitHub API in the browser so they reflect the latest pushes.
 export default function ProjectExplorer({ projects, minor, github, initial, initialRepos }: {
-  projects: Project[]; minor: Minor[]; github: string; initial: Activity; initialRepos: Repos;
+  projects: Project[]; minor: MinorProject[]; github: string; initial: Activity; initialRepos: Repos;
 }) {
-  const user = repoSlug(github);
-  const slugOf = (p: Project) => repoSlug(p.repo);
-  const minorSlug = (m: Minor) => `${user}/${m.repo}`;
+  const slugOf = (x: { repo: string }) => repoSlug(x.repo);
 
   const [activity, setActivity] = useState<Activity>(initial);
   const [repos, setRepos] = useState<Repos>(initialRepos);
@@ -55,8 +52,7 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
       return cleanup;
     }
 
-    const slugs = [...projects.map(slugOf), ...minor.map(minorSlug)];
-    Promise.all([fetchActivity(slugs, undefined, 5), fetchRepos(user)]).then(([data, info]) => {
+    Promise.all([fetchActivity(slugsOf([...projects, ...minor]), undefined, 5), fetchRepos(repoSlug(github))]).then(([data, info]) => {
       if (Object.keys(info).length) { setRepos((r) => ({ ...r, ...info })); writeCache(REPOS_KEY, info); }
       if (!Object.keys(data).length) return; // rate limited or offline: keep build data
       setActivity((a) => ({ ...a, ...data }));
@@ -100,10 +96,10 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
           })}
         </div>
         <span className="small muted more">more repos</span>
-        {newestFirst(minor, minorSlug, activity).map((m) => {
-          const c = latest(minorSlug(m));
+        {newestFirst(minor, slugOf, activity).map((m) => {
+          const c = latest(slugOf(m));
           return (
-            <a key={m.repo} className="minor" href={c?.url ?? `${github}/${m.repo}`}>
+            <a key={m.repo} className="minor" href={c?.url ?? m.repo}>
               <span className="dot" aria-hidden="true"><i /></span>
               <span className="minor-text">
                 <span><span className="muted">{c?.sha ?? m.hash}</span> {m.title}</span>
