@@ -2,7 +2,7 @@
 
 export const site = {
   name: 'Asifur Rahman',
-  title: 'Asifur Rahman, backend and platform developer',
+  title: 'Asifur Rahman, software developer',
   description:
     'Final-year CS (Co-op) at Concordia, two co-op terms at BMO Capital Markets on platform and infrastructure. Open to 2027 SWE internships and new grad roles.',
   url: 'https://asifur-rahman9.github.io',
@@ -84,11 +84,11 @@ export const projects: Project[] = [
     date: 'Dec 2024 to now',
     title: 'Service booking platform',
     summary: 'Full-stack app for booking local services, built with React, Express and MongoDB',
-    body: 'Customers search services, pick an open time slot and request a booking. Businesses accept or decline, mark jobs done, and an invoice is created automatically. Express API with JWT cookie auth, role checks on every route and a double-booking check; React + TypeScript front end built with Vite.',
+    body: 'Customers search services, pick an open time slot and request a booking. Businesses accept or decline, mark jobs done, and an invoice is created automatically. Express API with JWT cookie auth, role checks on every route and a double-booking check; React + TypeScript front end.',
     part: 'built the first version with two collaborators as plain HTML/JS pages, then rebuilt it with React, Express and MongoDB.',
     stack: ['TypeScript', 'React', 'Node.js', 'Express', 'MongoDB', 'Vitest'],
     metrics: [
-      { value: '12', label: 'API tests on in-memory MongoDB' },
+      { value: '19', label: 'REST endpoints' },
       { value: '5', label: 'API route groups' },
       { value: '2', label: 'roles: customer and business' },
     ],
@@ -112,7 +112,7 @@ export const projects: Project[] = [
     part: 'the arm, its kinematics and attack AI, the camera, and the project structure. Built the first version with a partner, then reworked the engine and added the gameplay.',
     stack: ['C++17', 'OpenGL', 'GLSL', 'CMake', 'doctest'],
     metrics: [
-      { value: '16', label: 'unit tests on engine-free game logic' },
+      { value: '5', label: "states in the arm's attack AI" },
       { value: '10,000+', label: 'grass and tree instances in 3 draw calls' },
       { value: '16', label: 'point lights at once' },
     ],

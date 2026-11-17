@@ -14,7 +14,7 @@ export type Action =
 export type Result = { output: string; action?: Action };
 
 export const banner =
-  'Asifur Rahman, backend and platform developer.\nFinal-year CS @ Concordia. 2x co-op @ BMO Capital Markets.\nType "help" to look around.';
+  'Asifur Rahman, software developer.\nFinal-year CS @ Concordia. 2x co-op @ BMO Capital Markets.\nType "help" to look around.';
 
 // Short names for `open <name>`; values are project ids in site.ts.
 export const projectAliases: Record<string, string> = {
