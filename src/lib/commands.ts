@@ -16,10 +16,10 @@ export type Result = { output: string; action?: Action };
 export const banner =
   'Asifur Rahman, software developer.\nFinal-year CS @ Concordia. 2x co-op @ BMO Capital Markets.\nType "help" to look around.';
 
-// Short names for `open <name>`; values are project ids in site.ts.
-export const projectAliases: Record<string, string> = {
-  campusshare: 'campusshare', grpc: 'campusshare', bixi: 'bixi', booking: 'booking', hammerfall: 'engine', engine: 'engine',
-};
+// Names for `open <name>`: each project's id plus its aliases, mapped to the id.
+const projectNames: Record<string, string> = Object.fromEntries(
+  projects.flatMap((p) => [p.id, ...(p.aliases ?? [])].map((name) => [name, p.id])),
+);
 
 const pad = (s: string, n: number) => s.padEnd(n);
 const bullet = (s: string) => `  • ${s}`; // the terminal renders "  • " lines with a hanging indent
@@ -63,14 +63,11 @@ const table: Record<string, (arg: string) => Result> = {
   // hidden: projects are shown on the page below
   projects: () => ({
     output:
-      projects.map((p) => {
-        const name = Object.keys(projectAliases).find((k) => projectAliases[k] === p.id) ?? p.id;
-        return pad(name, 12) + p.title.split(':')[0];
-      }).join('\n') + '\nType "open <name>" to jump to it below.',
+      projects.map((p) => pad(p.id, 12) + p.title.split(':')[0]).join('\n') + '\nType "open <name>" to jump to it below.',
   }),
   open: (arg) => {
-    const id = projectAliases[arg.toLowerCase()];
-    if (!id) return { output: `no project called "${arg}". try: ${Object.keys(projectAliases).filter((k) => k !== 'engine' && k !== 'grpc').join(', ')}` };
+    const id = projectNames[arg.toLowerCase()];
+    if (!id) return { output: `no project called "${arg}". try: ${projects.map((p) => p.id).join(', ')}` };
     return { output: `opening ${arg}…`, action: { type: 'project', id } };
   },
   'git log': () => ({ output: 'fetching commits…', action: { type: 'gitlog' } }),

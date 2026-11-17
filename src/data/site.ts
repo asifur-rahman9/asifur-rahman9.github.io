@@ -16,7 +16,10 @@ export const site = {
 };
 
 export type Project = {
+  /** Also the terminal name: `open <id>`. */
   id: string;
+  /** Extra names `open` accepts (hidden from its suggestions). */
+  aliases?: string[];
   hash: string;
   date: string;
   title: string;
@@ -35,6 +38,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     id: 'campusshare',
+    aliases: ['grpc'],
     hash: '781a325',
     date: 'SOEN 423 project, rebuilt',
     title: 'CampusShare: distributed reservations over gRPC',
@@ -103,7 +107,8 @@ export const projects: Project[] = [
     repo: 'https://github.com/asifur-rahman9/service-booking-platform',
   },
   {
-    id: 'engine',
+    id: 'hammerfall',
+    aliases: ['engine'],
     hash: '0e60a66',
     date: 'Jul 2025 to now',
     title: 'Hammerfall Grove: C++ / OpenGL game',
