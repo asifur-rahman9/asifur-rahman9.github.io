@@ -24,17 +24,19 @@ export const projectAliases: Record<string, string> = {
 const pad = (s: string, n: number) => s.padEnd(n);
 const bullet = (s: string) => `  • ${s}`; // the terminal renders "  • " lines with a hanging indent
 
+// Commands listed by `help` (and cycled with the arrow keys), with their descriptions.
+const HELP: [command: string, description: string][] = [
+  ['about', 'who I am'],
+  ['experience', "where I've worked"],
+  ['skills', 'what I work with'],
+  ['contact', 'how to reach me'],
+  ['resume', 'download my resume'],
+  ['clear', 'clear the screen'],
+];
+export const helpCommands = HELP.map(([c]) => c);
+
 const table: Record<string, (arg: string) => Result> = {
-  help: () => ({
-    output: [
-      ['about', 'who I am'],
-      ['experience', "where I've worked"],
-      ['skills', 'what I work with'],
-      ['contact', 'how to reach me'],
-      ['resume', 'download my resume'],
-      ['clear', 'clear the screen'],
-    ].map(([c, d]) => pad(c, 13) + d).join('\n'),
-  }),
+  help: () => ({ output: HELP.map(([c, d]) => pad(c, 13) + d).join('\n') }),
   about: () => ({
     output: 'Asifur Rahman, software developer.\nFinal-year CS @ Concordia, 4x internship terms completed.\nOpen to 2027 internships and new grad roles.\nType "resume" to download my resume.',
   }),
@@ -96,7 +98,6 @@ table.ls = table.projects;
 
 /** Command names, for tab completion (hidden extras included, like a real shell). */
 export const commandNames = () => Object.keys(table).concat('history');
-export const helpCommands = ['about', 'experience', 'skills', 'contact', 'resume', 'clear'];
 
 /** Arrow-key browsing of helpCommands: the first press shows the first command, then it wraps both ways. */
 export function cycleCommand(current: number | null, step: 1 | -1, n = helpCommands.length): number {
