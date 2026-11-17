@@ -114,7 +114,7 @@ kbd{padding:1px 6px;border:1px solid var(--line2);border-bottom-width:2px;border
 .dot{flex:0 0 30px;display:flex;justify-content:center;padding-top:3px}
 .dot i{width:12px;height:12px;border-radius:50%;background:#3A4555;border:3px solid var(--bg);display:block;box-sizing:content-box}
 .commit.on .dot i{background:var(--accent)}
-.older{padding:10px 0 2px 42px}
+.more{padding:10px 0 2px 42px}
 .minor{display:flex;gap:12px;align-items:flex-start;padding:8px 0;line-height:1.5;text-decoration:none;color:var(--soft);font-size:13px}
 .minor:hover{color:var(--ink)}
 .minor .dot{padding-top:5px}

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fetchActivity, fetchRepos, parseCommits, parseRepos, rawUrl, repoSlug, shortDate, timeAgo } from '../src/lib/github';
+import { fetchActivity, fetchRepos, newestFirst, parseCommits, parseRepos, rawUrl, repoSlug, shortDate, timeAgo } from '../src/lib/github';
 
 const raw = [
   { sha: 'abcdef1234567', html_url: 'https://github.com/o/r/commit/abcdef1', commit: { message: 'feat: add risk board\n\nlong body', committer: { date: '2026-11-14T20:00:00Z' } } },
@@ -56,6 +56,12 @@ describe('github helpers', () => {
   it('returns no repos instead of throwing when GitHub is unreachable', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline'); }));
     expect(await fetchRepos('o')).toEqual({});
+  });
+
+  it('orders repos newest push first, repos with no data last', () => {
+    const at = (date: string) => [{ sha: 'a', message: 'm', date, url: '' }];
+    const activity = { 'o/old': at('2026-01-01T00:00:00Z'), 'o/new': at('2026-11-01T00:00:00Z') };
+    expect(newestFirst(['o/none', 'o/old', 'o/new'], (s) => s, activity)).toEqual(['o/new', 'o/old', 'o/none']);
   });
 
   it('builds raw file URLs on the default branch', () => {

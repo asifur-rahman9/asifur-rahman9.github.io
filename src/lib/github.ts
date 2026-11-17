@@ -66,6 +66,12 @@ export async function fetchActivity(slugs: string[], token?: string, limit = 3):
   return out;
 }
 
+/** Most recently pushed first, like `git log`. Repos with no data keep their order, at the end. */
+export function newestFirst<T>(items: T[], slugOf: (x: T) => string, activity: Activity): T[] {
+  const pushedAt = (x: T) => Date.parse(activity[slugOf(x)]?.[0]?.date ?? '') || 0;
+  return [...items].sort((a, b) => pushedAt(b) - pushedAt(a));
+}
+
 /** "just now", "5 min ago", "3 hours ago", "2 days ago", then a short date. */
 export function timeAgo(iso: string, now = Date.now()): string {
   const t = Date.parse(iso);

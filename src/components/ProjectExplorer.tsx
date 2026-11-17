@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Project } from '../data/site';
-import { fetchActivity, fetchRepos, rawUrl, repoSlug, shortDate, timeAgo, type Activity, type Repos } from '../lib/github';
+import { fetchActivity, fetchRepos, newestFirst, rawUrl, repoSlug, shortDate, timeAgo, type Activity, type Repos } from '../lib/github';
 
 type Minor = { hash: string; title: string; repo: string };
 type Sync = 'build' | 'live' | 'stale';
@@ -8,13 +8,6 @@ type Sync = 'build' | 'live' | 'stale';
 const CACHE_KEY = 'gh-activity-v1'; // also read by the terminal's `git log`
 const REPOS_KEY = 'gh-repos-v1';
 const CACHE_MS = 10 * 60 * 1000; // stay well under GitHub's 60 unauthenticated requests/hour
-
-const lastPush = (cs: Activity, slug: string) => Date.parse(cs[slug]?.[0]?.date ?? '') || 0;
-
-/** Oldest push first, newest at the bottom. Repos with no data keep their site.ts order. */
-function byPush<T>(items: T[], slugOf: (x: T) => string, cs: Activity): T[] {
-  return [...items].sort((a, b) => (lastPush(cs, slugOf(a)) || Infinity) - (lastPush(cs, slugOf(b)) || Infinity));
-}
 
 function readCache<T>(key: string): T | null {
   try {
@@ -38,7 +31,7 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
 
   const [activity, setActivity] = useState<Activity>(initial);
   const [repos, setRepos] = useState<Repos>(initialRepos);
-  const [sel, setSel] = useState(() => byPush(projects, slugOf, initial)[0].id);
+  const [sel, setSel] = useState(() => newestFirst(projects, slugOf, initial)[0].id);
   const [sync, setSync] = useState<Sync>(Object.keys(initial).length ? 'build' : 'stale');
   const [now, setNow] = useState<number | null>(null); // null until mounted: SSR shows absolute dates
   const [shot, setShot] = useState<Record<string, number>>({}); // selected screenshot per project
@@ -89,7 +82,7 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
         )}
         <span className="rail" aria-hidden="true" />
         <div className="commits">
-          {byPush(projects, slugOf, activity).map((p) => {
+          {newestFirst(projects, slugOf, activity).map((p) => {
             const on = p.id === sel, c = latest(slugOf(p));
             return (
               <button key={p.id} type="button" className={`commit ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => setSel(p.id)}>
@@ -106,8 +99,8 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
             );
           })}
         </div>
-        <span className="small muted older">older commits</span>
-        {byPush(minor, minorSlug, activity).map((m) => {
+        <span className="small muted more">more repos</span>
+        {newestFirst(minor, minorSlug, activity).map((m) => {
           const c = latest(minorSlug(m));
           return (
             <a key={m.repo} className="minor" href={c?.url ?? `${github}/${m.repo}`}>
