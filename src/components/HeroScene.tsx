@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { EVENTS, listen } from '../lib/events';
-import { DUCK_SIZE, FURNITURE, RELEASE_HAND, SEAT_SIZE, WALK, WALK_SIZE, duckRects, sitRects, type DuckFrame, type Rect, type SitPose } from '../lib/sprites';
+import { rand } from '../lib/random';
+import { DUCK_SIZE, FURNITURE, PX, RELEASE_HAND, SEAT_SIZE, WALK, WALK_SIZE, duckRects, sitRects, type DuckFrame, type Rect, type SitPose } from '../lib/sprites';
 
 /*
  * Pixel scene along the bottom of the hero.
@@ -10,7 +11,6 @@ import { DUCK_SIZE, FURNITURE, RELEASE_HAND, SEAT_SIZE, WALK, WALK_SIZE, duckRec
  * One requestAnimationFrame loop drives a small state machine; reduced motion shows the end state.
  */
 
-const PX = 4; // screen pixels per sprite pixel
 const FLOOR = 12; // floor strip height
 const Sprite = ({ rects, w, h, children }: { rects: Rect[]; w: number; h: number; children?: React.ReactNode }) => (
   <svg width={w * PX} height={h * PX} viewBox={`0 0 ${w} ${h}`} shapeRendering="crispEdges" style={{ display: 'block', overflow: 'visible' }}>
@@ -24,7 +24,6 @@ type GuyMode = 'walk' | 'settle' | 'code' | 'windup' | 'release';
 type Flight = { x0: number; x1: number; t0: number; dur: number };
 
 const DUCK_W = DUCK_SIZE.w * PX, GUY_SPEED = 62, DUCK_RUN = 230, DUCK_CARRY = 170, DUCK_WADDLE = 120, ARC = 90;
-const rand = (a: number, b: number) => a + Math.random() * (b - a);
 const GLYPHS = ['{ }', '</>', 'git push', 'fn()', '200 OK', 'npm test', ';'];
 const QUACKS = ['quack!', 'quack', 'qwak!', '!!'];
 

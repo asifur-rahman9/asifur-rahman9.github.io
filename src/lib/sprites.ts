@@ -23,6 +23,9 @@ export const PAL: Readonly<Record<string, string>> = {
   X: '#15171C', Z: '#F6A5C0', // eye, cheek
 };
 
+/** Screen pixels per sprite pixel, shared by the hero scene and the game. */
+export const PX = 4;
+
 export type Rect = [x: number, y: number, w: number, fill: string];
 export type Pix = [x: number, y: number, ch: string];
 

@@ -1,7 +1,8 @@
 // Duck runner: a small canvas game. The duck hops over cacti, flaps once in the air for a
 // double jump, and eats snacks for score multipliers. Seasons and day/night cycle as you go.
 // Best score is kept in localStorage, so it persists per browser.
-import { duckRects, toRects, type DuckFrame, type Rect } from './sprites';
+import { rand } from './random';
+import { DUCK_SIZE, PX, duckRects, toRects, type DuckFrame, type Rect } from './sprites';
 
 type Season = { name: string; sky: string; far: string; mid: string; near: string; ground: string; top: string; part: string; kind: 'fall' | 'fly' | 'snow' };
 const SEASONS: Season[] = [
@@ -16,7 +17,6 @@ const hex = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16))
 const mix = (a: number[], b: number[], t: number) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
 const rgb = (a: number[]) => `rgb(${a.join(',')})`;
 const shade = (h: string, night: number, k = 0.6) => rgb(mix(hex(h), NIGHT, night * k));
-const rand = (a: number, b: number) => a + Math.random() * (b - a);
 const smooth = (x: number) => x * x * (3 - 2 * x);
 
 // ---- sprites (character grids, same format as the hero scene, with their own palette) ----
@@ -37,8 +37,7 @@ const SNACKS: Record<Snack, { mult: number; rects: Rect[]; color: string }> = {
   shrimp: { mult: 5, color: '#FB923C', rects: grid(['..9999.', '.900009', '90.....', '90.....', '.99.9..', '..999..']) },
 };
 
-const PX = 4; // duck pixel size
-const DUCK = 14 * PX;
+const DUCK = DUCK_SIZE.w * PX; // duck size on screen
 const GRAV = 2100, JUMP = 680, FLAP = 560;
 const BEST_KEY = 'duck-runner-best';
 
