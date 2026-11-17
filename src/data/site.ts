@@ -141,9 +141,9 @@ export const experience: Job[] = [
     org: 'BMO Capital Markets, Platform & Infrastructure Development', place: 'Toronto, Ontario',
     bullets: [
       'Built a multithreaded Java reconciler indexing market data by composite key, surfacing discrepancies against AWS S3 archives',
-      'Replaced a deprecated Bitbucket REST library with a native Java client, clearing transitive CVEs blocking platform upgrades',
-      'Automated deployments across 7 installations and 4 environments using parameterized, config-driven Jenkins pipelines on Linux',
+      'Developed internal tooling and shared Java and Spring Boot libraries with S3 and REST clients for Global Markets teams',
       'Implemented column-level dynamic data masking on Aurora PostgreSQL with role-based controls to protect sensitive PII data',
+      'Automated deployments across 7 installations and 4 environments using parameterized, config-driven Jenkins pipelines on Linux',
     ],
   },
   {
@@ -182,9 +182,9 @@ export const experience: Job[] = [
 
 export const skills: [string, string][] = [
   ['Languages', 'Java, Python, TypeScript, JavaScript, C++, C, SQL, Bash'],
-  ['Frameworks & Libraries', 'Spring Boot, React, Node.js, Express.js, JUnit, Pytest, Pandas, NumPy, Scikit-learn, OpenGL'],
-  ['Technologies', 'AWS, Jenkins, Ansible, Linux, Liquibase, Docker, Git, Maven, PostgreSQL, SQL Server, MongoDB, Wireshark'],
-  ['Concepts', 'REST APIs, Multithreading, Microservices, TCP/UDP Sockets, CI/CD'],
+  ['Frameworks & Libraries', 'Spring Boot, gRPC, React, Node.js, Express.js, JUnit, Pytest, Pandas, NumPy, Scikit-learn, OpenGL'],
+  ['Technologies', 'AWS, Jenkins, GitHub Actions, Ansible, Linux, Liquibase, Docker, Git, Maven, PostgreSQL, SQL Server, MongoDB'],
+  ['Concepts', 'REST APIs, Distributed Systems, Multithreading, Microservices, TCP/UDP Sockets, CI/CD'],
 ];
 
 export const education = {
