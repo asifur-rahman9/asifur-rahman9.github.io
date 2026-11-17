@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { commandNames, cycleCommand, formatGitLog, helpCommands, runCommand } from '../lib/commands';
-import { projects } from '../data/site';
-import { fetchActivity, repoSlug, timeAgo, type Activity } from '../lib/github';
+import { minorProjects, projects } from '../data/site';
+import { CACHE_KEYS, readCache, writeCache } from '../lib/cache';
+import { fetchActivity, slugsOf, timeAgo, type Activity } from '../lib/github';
 
 // Output lines starting with "  • " get a hanging indent so wrapped bullets line up.
 function Out({ text }: { text: string }) {
@@ -10,12 +11,12 @@ function Out({ text }: { text: string }) {
 }
 
 async function gitLog(): Promise<string> {
-  let data: Activity = {};
-  try { // reuse what the Projects section already fetched
-    const cached = JSON.parse(sessionStorage.getItem('gh-activity-v1') || 'null');
-    if (cached && Date.now() - cached.at < 10 * 60 * 1000) data = cached.data;
-  } catch { /* ignore */ }
-  if (!Object.keys(data).length) data = await fetchActivity(projects.map((p) => repoSlug(p.repo)));
+  // reuse what the Projects section already fetched; otherwise fetch the same set and share it
+  let data = readCache<Activity>(CACHE_KEYS.activity) ?? {};
+  if (!Object.keys(data).length) {
+    data = await fetchActivity(slugsOf([...projects, ...minorProjects]), undefined, 5);
+    if (Object.keys(data).length) writeCache(CACHE_KEYS.activity, data);
+  }
   const rows = Object.entries(data).flatMap(([slug, cs]) => cs.slice(0, 2).map((c) => ({
     repo: slug.split('/')[1], sha: c.sha, message: c.message, when: timeAgo(c.date), t: Date.parse(c.date),
   }))).sort((a, b) => b.t - a.t);

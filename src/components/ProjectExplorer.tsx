@@ -1,22 +1,9 @@
 import { useEffect, useState } from 'react';
 import type { MinorProject, Project } from '../data/site';
+import { CACHE_KEYS, readCache, writeCache } from '../lib/cache';
 import { fetchActivity, fetchRepos, newestFirst, rawUrl, repoSlug, shortDate, slugsOf, timeAgo, type Activity, type Repos } from '../lib/github';
 
 type Sync = 'build' | 'live' | 'stale';
-
-const CACHE_KEY = 'gh-activity-v1'; // also read by the terminal's `git log`
-const REPOS_KEY = 'gh-repos-v1';
-const CACHE_MS = 10 * 60 * 1000; // stay well under GitHub's 60 unauthenticated requests/hour
-
-function readCache<T>(key: string): T | null {
-  try {
-    const c = JSON.parse(sessionStorage.getItem(key) || 'null');
-    return c && Date.now() - c.at < CACHE_MS ? c.data : null;
-  } catch { return null; }
-}
-function writeCache(key: string, data: unknown) {
-  try { sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), data })); } catch { /* ignore */ }
-}
 
 // Commit-graph project picker. Every project's panel is rendered into the static HTML
 // (only the selected one is visible). Commits and repo descriptions ship from the last build,
@@ -42,9 +29,9 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
     const tick = setInterval(() => setNow(Date.now()), 60_000);
     const cleanup = () => { clearInterval(tick); window.removeEventListener('select-project', pick); };
 
-    // reuse a recent result from this tab to save rate limit
-    const cachedActivity = readCache<Activity>(CACHE_KEY);
-    const cachedRepos = readCache<Repos>(REPOS_KEY);
+    // reuse a recent result (from any tab) to save rate limit
+    const cachedActivity = readCache<Activity>(CACHE_KEYS.activity);
+    const cachedRepos = readCache<Repos>(CACHE_KEYS.repos);
     if (cachedActivity && cachedRepos) {
       setActivity((a) => ({ ...a, ...cachedActivity }));
       setRepos((r) => ({ ...r, ...cachedRepos }));
@@ -53,11 +40,11 @@ export default function ProjectExplorer({ projects, minor, github, initial, init
     }
 
     Promise.all([fetchActivity(slugsOf([...projects, ...minor]), undefined, 5), fetchRepos(repoSlug(github))]).then(([data, info]) => {
-      if (Object.keys(info).length) { setRepos((r) => ({ ...r, ...info })); writeCache(REPOS_KEY, info); }
+      if (Object.keys(info).length) { setRepos((r) => ({ ...r, ...info })); writeCache(CACHE_KEYS.repos, info); }
       if (!Object.keys(data).length) return; // rate limited or offline: keep build data
       setActivity((a) => ({ ...a, ...data }));
       setSync('live');
-      writeCache(CACHE_KEY, data);
+      writeCache(CACHE_KEYS.activity, data);
     });
     return cleanup;
   }, []);
