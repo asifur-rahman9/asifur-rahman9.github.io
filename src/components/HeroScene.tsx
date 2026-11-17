@@ -84,7 +84,7 @@ export default function HeroScene() {
       return cleanup;
     }
 
-    let raf = 0, last = performance.now();
+    let raf = 0, last = 0;
     const step = (now: number) => {
       // rAF timestamps can predate performance.now() on the first frame; never step backwards
       const dt = Math.max(0, Math.min(0.05, (now - last) / 1000));
@@ -94,8 +94,13 @@ export default function HeroScene() {
       render((n) => n + 1);
       raf = requestAnimationFrame(step);
     };
-    raf = requestAnimationFrame(step);
-    return () => { cancelAnimationFrame(raf); cleanup(); };
+    const play = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(step); } };
+    const pause = () => { cancelAnimationFrame(raf); raf = 0; };
+    // only animate (and re-render) while the hero is on screen; the scene picks up where it left off
+    const io = new IntersectionObserver(([e]) => (e.isIntersecting ? play() : pause()));
+    if (box.current) io.observe(box.current);
+    else play();
+    return () => { pause(); io.disconnect(); cleanup(); };
   }, []);
 
   function moveDuck(x: number, speed: number, dt: number) {
